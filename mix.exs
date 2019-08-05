@@ -42,7 +42,7 @@ defmodule ExCiProxy.Mixfile do
      {:timex, "~> 3.0"},
      {:timex_ecto, "~> 3.0"},
      {:ecto_conditionals, "~> 0.1.0"},
-     {:yaml_elixir, "~> 1.3.1"},
+     {:yaml_elixir, "~> 2.4.0"},
      {:cors_plug, "~> 1.2"},
      {:ex_machina, "~> 2.0"},
      {:gproc, "0.3.1"},
