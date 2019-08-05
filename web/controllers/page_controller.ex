@@ -12,6 +12,7 @@ defmodule ExCiProxy.PageController do
   def index(conn, _status_params) do
 
     build_status = %{"project_name" => "testproj", 
+      "status" => "success",
       "commit_ref" => "fjkld1jkl33", 
       "tag" => "v0.0.1", 
       "arch" => "amd64"} 

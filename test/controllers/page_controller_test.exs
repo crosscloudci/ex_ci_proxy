@@ -10,6 +10,7 @@ defmodule ExCiProxy.PageControllerTest do
     page = json_response(conn, 200)
     assert  %{"tag" => "v0.0.1",
       "project_name" => "testproj",
+      "status" => "success",
       "commit_ref" => "fjkld1jkl33",
       "arch" => "amd64"} = json_response(conn, 200)["build_status"]
   end
