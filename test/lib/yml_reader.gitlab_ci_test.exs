@@ -73,6 +73,22 @@ defmodule CncfDashboardApi.YmlReader.GitlabCiTest do
     assert Enum.find_value(project_list, fn(x) -> Map.has_key?(x,"logo_url") end)  
   end
 
+  test "testproj_project_list" do 
+    full_project_list = CncfDashboardApi.YmlReader.GitlabCi.project_list()
+
+    project_list = Enum.reduce(full_project_list, [], fn (x, acc) -> 
+      case x["yml_name"] do
+        "testproj" -> [x | acc]
+        _ -> acc 
+      end 
+    end)
+
+    assert Enum.find_value(project_list, fn(x) -> x["yml_name"] == "testproj" end) 
+    IEx.pry()
+    assert Enum.find_value(project_list, fn(x) -> x["ci_system"] == "citest" end) 
+  end
+
+
 
   test "project_list" do 
     project_list = CncfDashboardApi.YmlReader.GitlabCi.project_list()

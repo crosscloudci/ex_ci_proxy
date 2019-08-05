@@ -110,6 +110,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
       project_url = if v["project_url"], do: v["project_url"], else: cncfci_yml["project"]["project_url"]
       stable_ref = if v["stable_ref"], do: v["stable_ref"], else: cncfci_yml["project"]["stable_ref"]
       head_ref = if v["head_ref"], do: v["head_ref"], else: cncfci_yml["project"]["head_ref"]
+      ci_system = if v["ci_system"], do: v["ci_system"], else: cncfci_yml["project"]["ci_system"]
 			[%{"id" => 0, 
         "yml_name" => k, 
         "active" => v["active"],
@@ -124,6 +125,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
         "cncf_relation" => v["cncf_relation"],
         "stable_ref" => stable_ref,
         "head_ref" => head_ref,
+        "ci_system" => ci_system,
         # "order" => (idx + 1)} | acc] 
         "order" => v["order"]} | acc] 
 		end) 
