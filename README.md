@@ -16,3 +16,14 @@ Ready to run in production? Please [check our deployment guides](http://www.phoe
   * Docs: https://hexdocs.pm/phoenix
   * Mailing list: http://groups.google.com/group/phoenix-talk
   * Source: https://github.com/phoenixframework/phoenix
+
+
+## setup
+
+Use setup.sh to select erlang and elixir versions
+
+## testing
+
+```
+curl <url>/ci_status_build/commit_ref 
+```
