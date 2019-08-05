@@ -84,8 +84,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCiTest do
     end)
 
     assert Enum.find_value(project_list, fn(x) -> x["yml_name"] == "testproj" end) 
-    IEx.pry()
-    assert Enum.find_value(project_list, fn(x) -> x["ci_system"] == "citest" end) 
+    assert Enum.find_value(project_list, fn(x) -> Enum.at(x["ci_system"], 0)["ci_system_type"] == "citest" end) 
   end
 
 
