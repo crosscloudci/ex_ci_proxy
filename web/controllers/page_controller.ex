@@ -1,4 +1,3 @@
-require IEx;
 defimpl Poison.Encoder, for: Tuple do
     def encode(tuple, _options) do
           tuple
