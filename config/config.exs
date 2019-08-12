@@ -7,7 +7,7 @@ use Mix.Config
 
 # Configures the endpoint
 config :ex_ci_proxy, ExCiProxy.Endpoint,
-  url: [host: "localhost"],
+  url: [host: "0.0.0.0"],
   secret_key_base: "I8nhRiDi+2wDaqCEPXuPsMMirFgbwfVbedxm6t5YvZ5/pw2J0E9w69+ZC8Ne5qqq",
   render_errors: [view: ExCiProxy.ErrorView, accepts: ~w(html json)],
   pubsub: [name: ExCiProxy.PubSub,

@@ -8,8 +8,4 @@
 sleep 5
 echo "Connected!"
 
-# mix ecto.create || true
-# mix ecto.migrate
-# mix gitlab_data.load_clouds
-# mix gitlab_data.load_projects
 mix phoenix.server
