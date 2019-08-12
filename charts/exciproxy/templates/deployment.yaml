@@ -4,45 +4,27 @@ metadata:
   name: {{ .Values.name }}
   labels:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
-    {{- if .Values.isClusterService }}
-    k8s-app: {{ .Chart.Name | quote }}
-    kubernetes.io/cluster-service: "true"
-    kubernetes.io/name: "Backend"
-    {{- else }}
+    kubernetes.io/name: "ciproxy"
     app: {{ .Values.name }}
-    {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- if .Values.isClusterService }}
-      k8s-app: {{ .Chart.Name | quote }}
-      {{- else }}
       app: {{ .Values.name }}
-      {{- end }}
   template:
     metadata:
       labels:
-        {{- if .Values.isClusterService }}
-        k8s-app: {{ .Chart.Name | quote }}
-        {{- else }}
         app: {{ .Values.name }}
-        {{- end }}
         release: {{ .Release.Name | quote }}
-      annotations:
-        {{- if .Values.isClusterService }}
-        scheduler.alpha.kubernetes.io/critical-pod: ''
-        scheduler.alpha.kubernetes.io/tolerations: '[{"key":"CriticalAddonsOnly", "operator":"Exists"}]'
-        {{- end }}
     spec:
       containers:
       - name: "{{ .Values.name }}"
         env:
-        - name: GITLAB_API
-          value: {{ .Values.api }}
-        - name: GITLAB_TOKEN
-          value: {{ .Values.token }}
-        - name: GITLAB_CI_YML
+        # - name: GITLAB_API
+        #   value: {{ .Values.api }}
+        # - name: GITLAB_TOKEN
+        #   value: {{ .Values.token }}
+        - name: GLOBAL_CONFIG_YML
           value: {{ .Values.yaml }}
         - name: DB_USERNAME
           value: {{ .Values.db.user }}
@@ -58,7 +40,7 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: 4001
-          name: backend
+          name: ciproxy
         livenessProbe:
           httpGet:
             path: /

@@ -10,8 +10,9 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - backend:
+          - ciproxy:
               serviceName: {{ .Values.name }}
               servicePort: {{ .Values.ingress.port }}
-            path: /
+            path: /v1/ciproxy
+
 

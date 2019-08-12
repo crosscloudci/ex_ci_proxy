@@ -6,21 +6,12 @@ metadata:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
-    {{- if .Values.isClusterService }}
-    k8s-app: {{ .Chart.Name | quote }}
-    kubernetes.io/cluster-service: "true"
-    kubernetes.io/name: "Backend"
-    {{- else }}
+    kubernetes.io/name: "ciproxy"
     app: {{ .Values.name }}
-    {{- end }}
 spec:
   selector:
-  {{- if .Values.isClusterService }}
-    k8s-app: {{ .Chart.Name | quote }}
-  {{- else }}
     app: {{ .Values.name }}
-  {{- end }}
   ports:
-  - name: backend
+  - name: ciproxy
     port: 4001
   type: {{ .Values.serviceType }}

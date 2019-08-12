@@ -32,14 +32,11 @@ resources:
     cpu: 2000m
     memory: 2028Mi
 
-# isClusterService specifies whether chart should be deployed as cluster-service or normal k8s app.
-isClusterService: true
-
 # serviceType specifies type of service to be created for this chart.
 serviceType: "ClusterIP"
 
-api: SET GITLAB APISERVER
-token: SET GITLAB TOKEN
-yaml: SET YAML
+# api: SET GITLAB APISERVER
+# token: SET GITLAB TOKEN
+yaml: SET GLOBAL CONFIG YAML
 
 
