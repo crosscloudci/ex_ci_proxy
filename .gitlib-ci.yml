@@ -5,7 +5,7 @@ stages:
 before_script:
   - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
 
-Dashboard-Backend:
+CI-Proxy:
   stage: Build
   script:
     - >
@@ -25,7 +25,7 @@ Dashboard-Backend:
     - docker build --pull --no-cache -t "$CI_REGISTRY_IMAGE/ciproxy-$CI_COMMIT_REF_NAME:$CI_COMMIT_SHA" .
     - docker push "$CI_REGISTRY_IMAGE/ciproxy-$CI_COMMIT_REF_NAME:$CI_COMMIT_SHA"
 
-Deploy-Backend:
+CI-Proxy:
   stage: Deploy
   image: crosscloudci/helm:v2.10.0
   script:
@@ -57,11 +57,7 @@ Deploy-Backend:
     - /helm/entrypoint.sh
     - export KUBECONFIG=/kubeconfig
     - helm init --service-account tiller
-    - helm repo add cncf http://cncf.gitlab.io/stable
-    - helm repo update
-    # - helm upgrade nginx-"$CI_COMMIT_REF_NAME" --install --force stable/nginx-ingress
-    # Purge Delete old db
-    - helm delete --purge db-"$CI_COMMIT_REF_NAME"
+    - helm delete --purge db-ciservice-"$CI_COMMIT_REF_NAME"
     - helm install stable/postgresql --name db-ciservice-"$CI_COMMIT_REF_NAME" --set postgresqlDatabase=ciproxy --set persistence.enabled=false --set service.type=ClusterIP
-    - export POSTGRESQL_PASSWORD=$(kubectl get secret --namespace default db-"$CI_COMMIT_REF_NAME"-postgresql -o jsonpath="{.data.postgresql-password}" | base64 -d)
-    - helm upgrade ciproxy-"$CI_COMMIT_REF_NAME" cncf/ciproxy --install --force --wait --timeout 3600 --set tls="$TLS" --set db.user=postgres --set db.password=$POSTGRESQL_PASSWORD --set db.name=ciproxy --set db.host=db-"$CI_COMMIT_REF_NAME"-postgresql --set db.pool=5 --set imagePullSecrets="$CI_COMMIT_REF_NAME"secret --set yaml=https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/"$CI_COMMIT_REF_NAME"/cross-cloud.yml --set project.segment_env="$PROJECT_SEGMENT_ENV" --set ingress.host="$CIPROXY_INGRESS" --set ingress.port=4001 --set image.repository="$CI_REGISTRY_IMAGE/ciproxy-$CI_COMMIT_REF_NAME" --set image.tag="$CI_COMMIT_SHA"
+    - export POSTGRESQL_PASSWORD=$(kubectl get secret --namespace default db-ciservice-"$CI_COMMIT_REF_NAME"-postgresql -o jsonpath="{.data.postgresql-password}" | base64 -d)
+    - helm upgrade ciproxy-"$CI_COMMIT_REF_NAME" ./charts/exciproxy --install --force --wait --timeout 3600 --set tls="$TLS" --set db.user=postgres --set db.password=$POSTGRESQL_PASSWORD --set db.name=ciproxy --set db.host=db-ciservice-"$CI_COMMIT_REF_NAME"-postgresql --set db.pool=5 --set imagePullSecrets="$CI_COMMIT_REF_NAME"secret --set yaml=https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/"$CI_COMMIT_REF_NAME"/cross-cloud.yml --set project.segment_env="$PROJECT_SEGMENT_ENV" --set ingress.host="$CIPROXY_INGRESS" --set ingress.port=4001 --set image.repository="$CI_REGISTRY_IMAGE/ciproxy-$CI_COMMIT_REF_NAME" --set image.tag="$CI_COMMIT_SHA"
