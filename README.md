@@ -24,6 +24,50 @@ Use setup.sh to select erlang and elixir versions
 
 ## testing
 
+## Docker
+
+### Build ex_ci_proxy
 ```
-curl <url>/ci_status_build/commit_ref 
+	docker build -t crosscloud/ciproxy:latest . 
+```
+	
+### Build deps for ex_ci_proxy 
+
+```
+	 docker build -t crosscloudci/ciproxy-deps:latest --file Dockerfile.deps 
+```
+	 
+### Optional: Push to dockerhub repository
+```
+	 docker push crosscloudci/ciproxy-deps:latest
+```
+	
+### Optional: push of ex_ci_proxy docker image
+```
+	 docker push crosscloud/ciproxy:latest
+```
+
+### Test the docker image
+```
+   docker run -ti ciproxy:latest
+```
+### Test with port mapping 
+```
+	 docker run -ti ciproxy:latest -p 4001:4001    
+```
+### Get name of the container 
+```
+	 docker ps 
+```
+### Optional: Bash prompt 
+```
+	docker exec -ti <name of container> /bin/bash 
+```
+### Get docker ip address 
+```
+	docker exec -ti <name of container> ifconfig
+```
+### Test with docker container ip 
+```
+	curl -X GET "http://localhost:<docker ip address>/ci_status_build/commit_ref?project=<ci project>&ref=<commit hash>&arch=AMD64" 
 ```
