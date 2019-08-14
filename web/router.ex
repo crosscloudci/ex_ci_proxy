@@ -15,7 +15,7 @@ defmodule ExCiProxy.Router do
 
   scope "/", ExCiProxy do
     pipe_through [:api]
-    resources "/ci_status_build/commit_ref", PageController, except: [:new, :edit]
+    resources "/ciproxy/v1/ci_status_build/commit_ref", PageController, except: [:new, :edit]
     # get "/", PageController, :index
   end
 

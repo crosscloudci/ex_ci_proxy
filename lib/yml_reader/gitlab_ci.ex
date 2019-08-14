@@ -4,7 +4,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
   use Retry
 	def get do
 		Application.ensure_all_started :inets
-    retry with: exp_backoff |> randomize |> cap(1_000) |> expiry(8_000), rescue_only: [MatchError] do  
+    retry with: exp_backoff() |> randomize |> cap(1_000) |> expiry(8_000), rescue_only: [MatchError] do  
      {:ok, resp} = :httpc.request(:get, {System.get_env("GITLAB_CI_YML") |> to_charlist, []}, [], [body_format: :binary])
      {{_, 200, 'OK'}, _headers, body} = resp
         # Logger.info fn ->
@@ -26,7 +26,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
 	def getcncfci(configuration_repo) do
 		Application.ensure_all_started :inets
     try do
-      retry with: exp_backoff |> randomize |> cap(1_000) |> expiry(6_000), rescue_only: [MatchError] do  
+      retry with: exp_backoff() |> randomize |> cap(1_000) |> expiry(6_000), rescue_only: [MatchError] do  
         if is_nil(configuration_repo) == false do
           Logger.info fn ->
             "Trying getcncfci http get on #{inspect(configuration_repo)}"
@@ -38,7 +38,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
         end
       end
     rescue
-      e in MatchError -> 
+      _e in MatchError -> 
         Logger.error fn ->
           "failed at gitlab_ci http get on #{inspect(configuration_repo)}"
         end
@@ -50,7 +50,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
     {:ok, yml} = CncfDashboardApi.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
     yml["clouds"] 
     |> Stream.with_index 
-    |> Enum.reduce([], fn ({{k, v}, idx}, acc) -> 
+    |> Enum.reduce([], fn ({{k, v}, _idx}, acc) -> 
       # [%{"id" => (idx + 1), 
       [%{"id" => 0, 
         "cloud_name" => k, 
@@ -75,7 +75,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
 		{:ok, yml} = CncfDashboardApi.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
 		yml["projects"] 
 		|> Stream.with_index 
-		|> Enum.reduce([], fn ({{k, v}, idx}, acc) -> 
+		|> Enum.reduce([], fn ({{k, v}, _idx}, acc) -> 
       case configuration_repo_path(v["configuration_repo"]) |> getcncfci() do
         {:error, :not_found} ->
           acc
@@ -97,7 +97,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
 		{:ok, yml} = CncfDashboardApi.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
 		yml["projects"] 
 		|> Stream.with_index 
-		|> Enum.reduce([], fn ({{k, v}, idx}, acc) -> 
+		|> Enum.reduce([], fn ({{k, v}, _idx}, acc) -> 
       # IEx.pry()
       # global config overwrites the project config
       cncfci_yml = if Enum.find_value(project_names, fn(x) -> x["project_name"] == k end) do
@@ -135,7 +135,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
 		{:ok, yml} = CncfDashboardApi.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
 		yml["gitlab_pipeline"] 
 		|> Stream.with_index 
-		|> Enum.reduce([], fn ({{k, v}, idx}, acc) -> 
+		|> Enum.reduce([], fn ({{k, v}, _idx}, acc) -> 
 			# [%{"id" => (idx + 1), 
 			[%{"id" => 0, 
         "pipeline_name" => k, 
@@ -144,4 +144,16 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
         } | acc] 
 		end) 
 	end
+
+  def project_ci_system(project_name) do
+    full_project_list = CncfDashboardApi.YmlReader.GitlabCi.project_list()
+
+    project_list = Enum.reduce(full_project_list, [], fn (x, acc) -> 
+      case x["yml_name"] do
+        ^project_name -> [x | acc]
+        _ -> acc 
+      end 
+    end)
+    project_list[0]["ci_system"]
+  end
 end
