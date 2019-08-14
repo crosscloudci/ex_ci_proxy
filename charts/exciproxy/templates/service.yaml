@@ -1,17 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.name }}
+  name: {{ .Release.Name }} 
   labels:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     kubernetes.io/name: "ciproxy"
-    app: {{ .Values.name }}
+    app: {{ .Release.Name }} 
 spec:
   selector:
-    app: {{ .Values.name }}
+    app: {{ .Release.Name }} 
   ports:
-  - name: ciproxy
+  - name: {{ .Release.Name }}
     port: 4001
   type: {{ .Values.serviceType }}
