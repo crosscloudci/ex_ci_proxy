@@ -7,8 +7,8 @@ replicaCount: 1
 name: exciproxy
 
 image:
-  repository: registry.cncf.ci/cncf/ex_ci_proxy
-  tag: "latest"
+  repository: crosscloudci/ciproxy-deps:latest
+  tag: "ciproxy"
   secret: SET DOCKER SECRET
   pullPolicy: Always
   imagePullSecrets: SET NAME FOR PRIVATE REG
