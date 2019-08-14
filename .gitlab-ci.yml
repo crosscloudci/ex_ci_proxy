@@ -25,7 +25,7 @@ CI-Proxy:
     - docker build --pull --no-cache -t "$CI_REGISTRY_IMAGE/ciproxy-$CI_COMMIT_REF_NAME:$CI_COMMIT_SHA" .
     - docker push "$CI_REGISTRY_IMAGE/ciproxy-$CI_COMMIT_REF_NAME:$CI_COMMIT_SHA"
 
-CI-Proxy:
+CI-Proxy-Deploy:
   stage: Deploy
   image: crosscloudci/helm:v2.10.0
   script:
