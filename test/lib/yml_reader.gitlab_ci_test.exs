@@ -13,7 +13,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCiTest do
 		{:ok, yml} = CncfDashboardApi.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
 		yml["projects"] 
 		|> Stream.with_index 
-    |> Enum.reduce([], fn ({{k, v}, idx}, acc) -> 
+    |> Enum.reduce([], fn ({{k, v}, _idx}, _acc) -> 
       case k do
         "prometheus" ->
           # Logger.info fn ->
@@ -21,7 +21,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCiTest do
           # end
           yml = CncfDashboardApi.YmlReader.GitlabCi.configuration_repo_path(v["configuration_repo"]) |> CncfDashboardApi.YmlReader.GitlabCi.getcncfci() 
           assert yml |> is_binary  
-        _ ->
+        _ -> nil
       end
 		end) 
   end
@@ -62,7 +62,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCiTest do
     assert Enum.find_value(project_list, fn(x) -> x["active"] == true end) 
     assert Enum.find_value(project_list, fn(x) -> x["display_name"] == "CoreDNS" end) 
     assert Enum.find_value(project_list, fn(x) -> x["sub_title"] == "Service Discovery" end) 
-    assert Enum.find_value(project_list, fn(x) -> x["stable_ref"] == "v1.6.0" end) 
+    assert Enum.find_value(project_list, fn(x) -> is_binary(x["stable_ref"]) end) 
     assert Enum.find_value(project_list, fn(x) -> x["head_ref"] == "master" end) 
     assert Enum.find_value(project_list, fn(x) -> x["yml_gitlab_name"] == "coredns" end) 
     assert Enum.find_value(project_list, fn(x) -> x["cncf_relation"] == "Graduated" end) 
@@ -84,7 +84,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCiTest do
     end)
 
     assert Enum.find_value(project_list, fn(x) -> x["yml_name"] == "testproj" end) 
-    assert Enum.find_value(project_list, fn(x) -> Enum.at(x["ci_system"], 0)["ci_system_type"] == "citest" end) 
+    assert Enum.find_value(project_list, fn(x) -> Enum.at(x["ci_system"], 0)["ci_system_type"] == "travis-ci" end) 
   end
 
 

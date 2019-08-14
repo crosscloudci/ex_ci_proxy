@@ -7,7 +7,7 @@ defmodule ExCiProxy.PageControllerTest do
   # end
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, page_path(conn, :index)
-    page = json_response(conn, 200)
+    _page = json_response(conn, 200)
     assert  %{"tag" => "v0.0.1",
       "project_name" => "testproj",
       "status" => "success",
