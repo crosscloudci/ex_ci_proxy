@@ -1,0 +1,4 @@
+plugins:
+- name: "travis"
+   interface: "cli"
+   repo: "http://github.com/crosscloudci/ci_plugin_travis"
