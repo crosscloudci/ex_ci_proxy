@@ -11,7 +11,7 @@ defmodule ExCiProxy.PageController do
   def index(conn, status_params) do
     build_status = CncfDashboardApi.RegisterPlugin.ci_system_type_list("testproj")
           |> List.first
-          |> CncfDashboardApi.RegisterPlugin.status("crosscloudci/testproj", "834f6f81e3946c4fa", "amd86")
+          |> CncfDashboardApi.RegisterPlugin.status(status_params["project"], status_params["ref"], status_params["arch"])
       
 
     render(conn, "index.json", build_status: build_status)
