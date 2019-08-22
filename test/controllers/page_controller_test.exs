@@ -1,12 +1,9 @@
 defmodule ExCiProxy.PageControllerTest do
   use ExCiProxy.ConnCase
 
-  # test "GET /", %{conn: conn} do
-  #   conn = get conn, "/"
-  #   assert html_response(conn, 200) =~ "Welcome to Phoenix!"
-  # end
+  @valid_attrs %{project: "crosscloudci/testproj", ref: "834f6f81e394", arch: "amd64"}
   test "lists all entries on index", %{conn: conn} do
-    conn = get conn, page_path(conn, :index)
+    conn = get conn, page_path(conn, :index), @valid_attrs
     _page = json_response(conn, 200)
     assert  %{"tag" => "v0.0.1",
       "project_name" => "testproj",

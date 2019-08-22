@@ -87,8 +87,6 @@ defmodule CncfDashboardApi.YmlReader.GitlabCiTest do
     assert Enum.find_value(project_list, fn(x) -> Enum.at(x["ci_system"], 0)["ci_system_type"] == "travis-ci" end) 
   end
 
-
-
   test "project_list" do 
     project_list = CncfDashboardApi.YmlReader.GitlabCi.project_list()
     assert Enum.find_value(project_list, fn(x) -> x["yml_name"] == "kubernetes" end) 

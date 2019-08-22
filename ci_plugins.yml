@@ -1,4 +1,2 @@
-plugins:
-- name: "travis"
-   interface: "cli"
-   repo: "http://github.com/crosscloudci/ci_plugin_travis"
+plugins: 
+  - {name: "travis-ci", interface: "cli", repo: "http://github.com/crosscloudci/ci_plugin_travis_go"}
