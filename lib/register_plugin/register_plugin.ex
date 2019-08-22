@@ -4,7 +4,7 @@ defmodule CncfDashboardApi.RegisterPlugin do
 
   def register(plugin_name) do
     Logger.info fn ->
-      "register plugin_name: #{inspect(plugin_name)}"
+      "registering plugin_name: #{inspect(plugin_name)}"
     end
     repo = CncfDashboardApi.YmlReader.Config.get_repo(plugin_name)
     Logger.info fn ->
