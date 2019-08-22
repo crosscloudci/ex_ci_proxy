@@ -34,7 +34,7 @@ Use setup.sh to select erlang and elixir versions
 ### Build deps for ex_ci_proxy 
 
 ```
-	 docker build -t crosscloudci/ciproxy-deps:latest --file Dockerfile.deps 
+	 docker build -t crosscloudci/ciproxy-deps:latest --file Dockerfile.deps .
 ```
 	 
 ### Optional: Push to dockerhub repository

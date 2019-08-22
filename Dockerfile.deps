@@ -1,6 +1,7 @@
 FROM erlang:20-alpine
 MAINTAINER "Denver Williams <denver@debian.nz>"
 
+
 # Install Erlang/Elixir
 RUN apk -U upgrade && \
     apk --update --no-cache add inotify-tools ncurses-libs git make g++ wget ca-certificates openssl curl bash \
@@ -17,3 +18,5 @@ RUN source $HOME/.kiex/scripts/kiex && \
     kiex default 1.9.1
 
 
+# Install Golang
+ COPY --from=golang:1.11-alpine . .
