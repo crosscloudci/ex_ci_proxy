@@ -24,17 +24,17 @@ Use setup.sh to select erlang and elixir versions
 
 ## testing
 
-## Docker
+# Docker
 
-### Build ex_ci_proxy
-```
-	docker build -t crosscloud/ciproxy:latest . 
-```
-	
 ### Build deps for ex_ci_proxy 
 
 ```
 	 docker build -t crosscloudci/ciproxy-deps:latest --file Dockerfile.deps .
+```
+
+### Build ex_ci_proxy
+```
+	docker build -t crosscloudci/ciproxy:latest . 
 ```
 	 
 ### Optional: Push to dockerhub repository
@@ -44,16 +44,16 @@ Use setup.sh to select erlang and elixir versions
 	
 ### Optional: push of ex_ci_proxy docker image
 ```
-	 docker push crosscloud/ciproxy:latest
+	 docker push crosscloudci/ciproxy:latest
 ```
 
 ### Test the docker image
 ```
-   docker run -ti ciproxy:latest
+   docker run -ti crosscloudci/ciproxy:latest
 ```
 ### Test with port mapping 
 ```
-	 docker run -ti ciproxy:latest -p 4001:4001    
+	 docker run -e PROJECT_SEGMENT_ENV="master" -e GITLAB_CI_YML="https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/master/cross-cloud.yml" -ti crosscloudci/ciproxy:latest -p 4001:4001 
 ```
 ### Get name of the container 
 ```
@@ -71,3 +71,33 @@ Use setup.sh to select erlang and elixir versions
 ```
 	curl -X GET "http://localhost:<docker ip address>/ci_status_build/commit_ref?project=<ci project>&ref=<commit hash>&arch=AMD64" 
 ```
+
+# Plugin Development
+## plugin build executable
+```
+./ci_plugin/<plugin name>/bin/build-deps
+./ci_plugin/<plugin name>/bin/build
+```
+## Status executable and response format
+### The first line is a header
+### The second line is tab delimited, 
+```
+./ci_plugins/<plugin name>/bin/status status --project <orgname>/<projectname> --commit <commit name> 
+status  build_url
+success https://travis-ci.org/crosscloudci/testproj/builds/572521581 
+```
+## ci_plugin.yml configuration
+```
+plugins: 
+  - name: "travis-ci" 
+    interface: "cli" 
+    repo: "http://github.com/crosscloudci/ci_plugin_travis_go"
+    ref: "master"
+```
+### Name is the name of the plugin
+### Interface type of plugin
+### Repo is the github location of the plugin
+### Ref is the branch or tag of the plugin 
+
+ 
+

@@ -1,40 +1,98 @@
 require IEx;
 require Logger;
-defmodule CncfDashboardApi.RegisterPlugin do
+defmodule ExCiProxy.RegisterPlugin do
 
   def register(plugin_name) do
-    Logger.info fn ->
-      "registering plugin_name: #{inspect(plugin_name)}"
-    end
-    repo = CncfDashboardApi.YmlReader.Config.get_repo(plugin_name)
-    Logger.info fn ->
-      "register repo: #{inspect(repo)}"
-    end
-    if repo != :not_found do
-      if File.exists?("ci_plugins/" <> plugin_name) do
-        Logger.info fn ->
-          "register: pulling"
-        end
-        File.cd("ci_plugins/" <> plugin_name)
-        System.cmd("git", ["pull", "origin"])
-        File.cd("../../")
-      else
-        Logger.info fn ->
-          "register: cloning"
-        end
-        System.cmd("git", ["clone", repo, "ci_plugins/" <> plugin_name])
-      end
+    ExCiProxy.YmlReader.Config.get_repo(plugin_name)
+    |> ExCiProxy.RegisterPlugin.get_plugin(plugin_name)
+    |> ExCiProxy.RegisterPlugin.build(plugin_name)
+    # if repo != :not_found do
+    #   if File.exists?("ci_plugins/" <> plugin_name) do
+    #     Logger.info fn ->
+    #       "register: pulling"
+    #     end
+    #     File.cd("ci_plugins/" <> plugin_name)
+    #     #TODO checkout ref 
+    #     System.cmd("git", ["pull", "origin"])
+    #     File.cd("../../")
+    #   else
+    #     Logger.info fn ->
+    #       "register: cloning"
+    #     end
+    #     System.cmd("git", ["clone", "--single-branch", "--branch", 
+    #       System.get_env("PROJECT_SEGMENT_ENV"), repo, "ci_plugins/" <> plugin_name])
+    #     #TODO checkout ref 
+    #   end
       # execute build from in the plugin's direcory
+      # File.cd("ci_plugins/" <> plugin_name)
+      # System.cmd("bash", ["bin/build.sh"])
+      # File.cd("../../")
+    # else
+    #   :not_built
+    # end
+  end
+
+  def register(plugin_name, :deps) do
+    ExCiProxy.YmlReader.Config.get_repo(plugin_name)
+    |> ExCiProxy.RegisterPlugin.get_plugin(plugin_name)
+    |> ExCiProxy.RegisterPlugin.build(plugin_name, :deps)
+  end
+
+
+  def get_plugin(:not_found, _plugin_name) do
+    :not_built
+  end 
+
+  def get_plugin(repo, plugin_name) do
+    # if repo != :not_found do
+    if File.exists?("ci_plugins/" <> plugin_name) do
+      Logger.info fn ->
+        "register: pulling"
+      end
+      File.cd("ci_plugins/" <> plugin_name)
+      #TODO checkout ref 
+      System.cmd("git", ["fetch", "--all"])
+      # git reset --hard origin/master
+      System.cmd("git", ["reset", "--hard", "origin/" <> System.get_env("PROJECT_SEGMENT_ENV")])
+      # System.cmd("git", ["pull", "origin"])
+      File.cd("../../")
+    else
+      Logger.info fn ->
+        "register: cloning"
+      end
+      System.cmd("git", ["clone", "--single-branch", "--branch", 
+        System.get_env("PROJECT_SEGMENT_ENV"), repo, "ci_plugins/" <> plugin_name])
+      #TODO checkout ref 
+    end
+    repo
+  end
+
+  def build(:not_built, _plugin_name) do
+    :not_built
+  end
+
+  def build(_repo, plugin_name) do
       File.cd("ci_plugins/" <> plugin_name)
       System.cmd("bash", ["bin/build.sh"])
       File.cd("../../")
-    else
-      :not_built
+  end
+
+  def build(:not_built, _plugin_name, :deps) do
+    :not_built
+  end
+
+  def build(_repo, plugin_name, :deps) do
+    File.cd("ci_plugins/" <> plugin_name)
+    # Don't install the dependencies on your dev
+    # enviroment :/ Test using docker: see README
+    if Mix.env != :test do 
+      System.cmd("bash", ["bin/build-deps.sh"])
     end
+    File.cd("../../")
   end
 
   def ci_system_type_list do
-    CncfDashboardApi.YmlReader.GitlabCi.project_list()
+    ExCiProxy.YmlReader.GitlabCi.project_list()
     |> Enum.map(fn (x) -> 
       ci_system_type_list(x["yml_name"])
     end)
@@ -43,7 +101,7 @@ defmodule CncfDashboardApi.RegisterPlugin do
   end
 
   def ci_system_type_list(project) do
-    CncfDashboardApi.YmlReader.GitlabCi.project_list()
+    ExCiProxy.YmlReader.GitlabCi.project_list()
     |> Enum.reduce([], fn (x, acc) -> 
       # Get rid of everything except list of systems for
       # each project
@@ -66,9 +124,16 @@ defmodule CncfDashboardApi.RegisterPlugin do
   end
 
   def register_all_ci_systems do
-    CncfDashboardApi.RegisterPlugin.ci_system_type_list()
+    ExCiProxy.RegisterPlugin.ci_system_type_list()
     |> Enum.map(fn(x) ->
-      CncfDashboardApi.RegisterPlugin.register(x)
+      ExCiProxy.RegisterPlugin.register(x)
+    end)
+  end
+
+  def register_all_ci_system_dependencies do
+    ExCiProxy.RegisterPlugin.ci_system_type_list()
+    |> Enum.map(fn(x) ->
+      ExCiProxy.RegisterPlugin.register(x, :deps)
     end)
   end
 

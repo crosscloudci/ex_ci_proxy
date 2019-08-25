@@ -1,6 +1,6 @@
 require IEx;
 require Logger;
-defmodule CncfDashboardApi.YmlReader.GitlabCi do
+defmodule ExCiProxy.YmlReader.GitlabCi do
   use Retry
 	def get do
 		Application.ensure_all_started :inets
@@ -47,7 +47,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
   end
 
   def cloud_list do
-    {:ok, yml} = CncfDashboardApi.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
+    {:ok, yml} = ExCiProxy.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
     yml["clouds"] 
     |> Stream.with_index 
     |> Enum.reduce([], fn ({{k, v}, _idx}, acc) -> 
@@ -62,7 +62,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
 	end
 
   def cncf_relations_list do
-    {:ok, yml} = CncfDashboardApi.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
+    {:ok, yml} = ExCiProxy.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
     yml["cncf_relations"] 
     |> Stream.with_index 
     |> Enum.reduce([], fn ({v, idx}, acc) -> 
@@ -72,7 +72,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
 	end
 
   def projects_with_yml do
-		{:ok, yml} = CncfDashboardApi.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
+		{:ok, yml} = ExCiProxy.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
 		yml["projects"] 
 		|> Stream.with_index 
 		|> Enum.reduce([], fn ({{k, v}, _idx}, acc) -> 
@@ -93,8 +93,8 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
   end 
 
 	def project_list do
-    project_names = CncfDashboardApi.YmlReader.GitlabCi.projects_with_yml()
-		{:ok, yml} = CncfDashboardApi.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
+    project_names = ExCiProxy.YmlReader.GitlabCi.projects_with_yml()
+		{:ok, yml} = ExCiProxy.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
 		yml["projects"] 
 		|> Stream.with_index 
 		|> Enum.reduce([], fn ({{k, v}, _idx}, acc) -> 
@@ -132,7 +132,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
 	end
 
 	def gitlab_pipeline_config do
-		{:ok, yml} = CncfDashboardApi.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
+		{:ok, yml} = ExCiProxy.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
 		yml["gitlab_pipeline"] 
 		|> Stream.with_index 
 		|> Enum.reduce([], fn ({{k, v}, _idx}, acc) -> 
@@ -146,7 +146,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
 	end
 
   def project_ci_system(project_name) do
-    full_project_list = CncfDashboardApi.YmlReader.GitlabCi.project_list()
+    full_project_list = ExCiProxy.YmlReader.GitlabCi.project_list()
 
     project_list = Enum.reduce(full_project_list, [], fn (x, acc) -> 
       case x["yml_name"] do

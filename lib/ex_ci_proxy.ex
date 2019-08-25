@@ -6,7 +6,7 @@ defmodule ExCiProxy do
   def start(_type, _args) do
     import Supervisor.Spec
 
-    CncfDashboardApi.RegisterPlugin.register_all_ci_systems()
+    #ExCiProxy.RegisterPlugin.register_all_ci_systems()
 
     # Define workers and child supervisors to be supervised
     children = [

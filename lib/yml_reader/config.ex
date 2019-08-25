@@ -1,7 +1,6 @@
 require IEx;
 require Logger;
-defmodule CncfDashboardApi.YmlReader.Config do
-  use Retry
+defmodule ExCiProxy.YmlReader.Config do
 
 	def get do
     path = Path.join(File.cwd!(), "ci_plugins.yml")

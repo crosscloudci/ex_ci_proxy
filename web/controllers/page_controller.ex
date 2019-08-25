@@ -9,9 +9,9 @@ defmodule ExCiProxy.PageController do
   use ExCiProxy.Web, :controller
 
   def index(conn, status_params) do
-    build_status = CncfDashboardApi.RegisterPlugin.ci_system_type_list("testproj")
+    build_status = ExCiProxy.RegisterPlugin.ci_system_type_list("testproj")
           |> List.first
-          |> CncfDashboardApi.RegisterPlugin.status(status_params["project"], status_params["ref"], status_params["arch"])
+          |> ExCiProxy.RegisterPlugin.status(status_params["project"], status_params["ref"], status_params["arch"])
       
 
     render(conn, "index.json", build_status: build_status)

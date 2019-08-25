@@ -1,7 +1,6 @@
 FROM erlang:20-alpine
 MAINTAINER "Denver Williams <denver@debian.nz>"
 
-
 # Install Erlang/Elixir
 RUN apk -U upgrade && \
     apk --update --no-cache add inotify-tools ncurses-libs git make g++ wget ca-certificates openssl curl bash \
@@ -17,6 +16,23 @@ RUN source $HOME/.kiex/scripts/kiex && \
     kiex use 1.9.1 && \
     kiex default 1.9.1
 
+# Golang
+# RUN curl -O https://dl.google.com/go/go1.11.13.linux-amd64.tar.gz
+#
+# RUN tar -C /usr/local -xzf go1.11.13.linux-amd64.tar.gz 
+#
+# ENV PATH $PATH:/usr/local/go/bin
 
-# Install Golang
- COPY --from=golang:1.11-alpine . .
+# RUN echo "installing go version 1.12.7..." 
+# RUN apk add --no-cache --virtual .build-deps bash gcc musl-dev openssl go 
+# RUN wget -O go.tgz https://dl.google.com/go/go1.12.7.linux-amd64.tar.gz 
+# RUN tar -C /usr/local -xzf go.tgz 
+# WORKDIR /usr/local/go/src/ 
+# RUN pwd
+# RUN ls -al
+# RUN ./make.bash 
+# ENV PATH $PATH:/usr/local/go/bin:$PATH
+# ENV GOPATH $GOPATH:/opt/go/ 
+# ENV PATH $PATH:$GOPATH/bin 
+# RUN apk del .build-deps 
+# RUN go version
