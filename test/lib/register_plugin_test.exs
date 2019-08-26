@@ -19,19 +19,24 @@ defmodule ExCiProxy.RegisterPluginTest do
     assert ans == ["travis-ci"] 
   end
 
+  test "get_list_then_register all project's ci systems" do 
+    ans = ExCiProxy.RegisterPlugin.register_all_ci_systems_from_project_config()
+    assert ans == [:ok, :not_built] 
+  end
+
   test "get_list_then_register" do 
     ans = ExCiProxy.RegisterPlugin.register_all_ci_systems()
-    assert ans == [:ok, :not_built] 
+    assert ans == [:ok] 
   end
 
   test "get_list_then_register_all_dependencies" do 
     ans = ExCiProxy.RegisterPlugin.register_all_ci_system_dependencies()
-    assert ans == [:ok, :not_built] 
+    assert ans == [:ok] 
   end
 
   test "status" do 
     ExCiProxy.RegisterPlugin.register_all_ci_system_dependencies()
-    ExCiProxy.RegisterPlugin.register_all_ci_system_dependencies()
+    ExCiProxy.RegisterPlugin.register_all_ci_systems()
     ans = ExCiProxy.RegisterPlugin.ci_system_type_list("testproj")
           |> List.first
           |> ExCiProxy.RegisterPlugin.status("crosscloudci/testproj", "834f6f81e3946c4fa", "amd86")

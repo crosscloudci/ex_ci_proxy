@@ -18,4 +18,8 @@ defmodule ExCiProxy.YmlReader.ConfigTest do
     ref = ExCiProxy.YmlReader.Config.get_ref("travis-ci")
     assert is_binary(ref)
   end
+  test "get_plugin_ci_system_list" do 
+    list = ExCiProxy.YmlReader.Config.get_plugin_ci_system_list()
+    assert list == ["travis-ci"]
+  end
 end

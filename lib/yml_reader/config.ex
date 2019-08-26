@@ -9,10 +9,10 @@ defmodule ExCiProxy.YmlReader.Config do
   end
 
   def get_repo(service) do
-    repo = get |>
-    Enum.reduce([], fn(x, acc) -> 
+    repo = get() |>
+    Enum.reduce([], fn(x, _acc) -> 
       if x["name"] == service do
-          acc = x["repo"]
+        x["repo"]
       end
     end)
     if is_nil(repo) do
@@ -23,16 +23,28 @@ defmodule ExCiProxy.YmlReader.Config do
   end
 
   def get_ref(service) do
-    repo = get |>
-    Enum.reduce([], fn(x, acc) -> 
+    repo = get() |>
+    Enum.reduce([], fn(x, _acc) -> 
       if x["name"] == service do
-          acc = x["ref"]
+        x["ref"]
       end
     end)
     if is_nil(repo) do
       :not_found 
     else
       repo
+    end
+  end
+
+  def get_plugin_ci_system_list do
+    list = get() |>
+    Enum.reduce([], fn(x, acc) -> 
+      [x["name"] | acc]
+    end)
+    if is_nil(list) do
+      :not_found 
+    else
+      list 
     end
   end
 end

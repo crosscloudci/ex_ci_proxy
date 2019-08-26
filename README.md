@@ -86,6 +86,9 @@ Use setup.sh to select erlang and elixir versions
 status  build_url
 success https://travis-ci.org/crosscloudci/testproj/builds/572521581 
 ```
+Status MUST be running, success, or failed
+build_url MUST be a valid url to the ci system's build url
+
 ## ci_plugin.yml configuration
 ```
 plugins: 
