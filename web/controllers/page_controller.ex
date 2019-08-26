@@ -9,6 +9,11 @@ require Logger;
 defmodule ExCiProxy.PageController do
   use ExCiProxy.Web, :controller
 
+
+  def show(conn, _params) do
+    text conn, "Ok"
+  end
+
   def index(conn, status_params) do
     build_status = ExCiProxy.RegisterPlugin.ci_system_type_list(status_params["project"])
           |> List.first

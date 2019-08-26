@@ -11,4 +11,5 @@ defmodule ExCiProxy.PageControllerTest do
                     "status" => "success"
       } = json_response(conn, 200)["build_status"]
   end
+
 end
