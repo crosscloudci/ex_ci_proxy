@@ -5,11 +5,12 @@ defimpl Poison.Encoder, for: Tuple do
           |> Poison.encode!
         end
 end
+require Logger;
 defmodule ExCiProxy.PageController do
   use ExCiProxy.Web, :controller
 
   def index(conn, status_params) do
-    build_status = ExCiProxy.RegisterPlugin.ci_system_type_list("testproj")
+    build_status = ExCiProxy.RegisterPlugin.ci_system_type_list(status_params["project"])
           |> List.first
           |> ExCiProxy.RegisterPlugin.status(status_params["project"], status_params["ref"], status_params["arch"])
       

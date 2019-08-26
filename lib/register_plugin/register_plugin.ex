@@ -151,18 +151,12 @@ defmodule ExCiProxy.RegisterPlugin do
       Logger.debug fn ->
         "status ci_plugins/" <> plugin <> "/bin/status"
       end
-      ans = File.cwd
+      File.cwd
       |> elem(1)
       |> Path.join("ci_plugins/" <> plugin <> "/bin/status")
       |> System.cmd(["status", "--project", project, "--commit", ref])
       |> elem(0)
       |> ci_parse
-      %{"project_name" => "testproj", 
-        "status" => ans["status"],
-        "build_url" => ans["build_url"],
-        "commit_ref" => "fjkld1jkl33", 
-        "tag" => "v0.0.1", 
-        "arch" => "amd64"} 
     end
   end
 
