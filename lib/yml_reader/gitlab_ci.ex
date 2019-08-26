@@ -7,9 +7,6 @@ defmodule ExCiProxy.YmlReader.GitlabCi do
     retry with: exp_backoff() |> randomize |> cap(1_000) |> expiry(8_000), rescue_only: [MatchError] do  
      {:ok, resp} = :httpc.request(:get, {System.get_env("GITLAB_CI_YML") |> to_charlist, []}, [], [body_format: :binary])
      {{_, 200, 'OK'}, _headers, body} = resp
-        # Logger.info fn ->
-        #   "cross-cloud body #{body}"
-        # end
      body
     end
   end
@@ -28,7 +25,7 @@ defmodule ExCiProxy.YmlReader.GitlabCi do
     try do
       retry with: exp_backoff() |> randomize |> cap(1_000) |> expiry(6_000), rescue_only: [MatchError] do  
         if is_nil(configuration_repo) == false do
-          Logger.info fn ->
+          Logger.debug fn ->
             "Trying getcncfci http get on #{inspect(configuration_repo)}"
           end
           {:ok, {{_, 200, 'OK'}, _headers, body}} = :httpc.request(:get, {configuration_repo |> to_charlist, []}, [], [body_format: :binary])
@@ -86,9 +83,6 @@ defmodule ExCiProxy.YmlReader.GitlabCi do
   end
 
   def configuration_repo_path(configuration_repo) do 
-    # Logger.info fn ->
-    #   "env variable: #{inspect(System.get_env("PROJECT_SEGMENT_ENV"))}"
-    # end
      "#{configuration_repo}/#{System.get_env("PROJECT_SEGMENT_ENV")}/cncfci.yml"
   end 
 

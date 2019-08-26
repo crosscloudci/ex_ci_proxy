@@ -16,6 +16,6 @@ defmodule ExCiProxy.YmlReader.ConfigTest do
 
   test "ref" do 
     ref = ExCiProxy.YmlReader.Config.get_ref("travis-ci")
-    assert ref == "master"
+    assert is_binary(ref)
   end
 end

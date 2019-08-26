@@ -3,6 +3,8 @@ defmodule ExCiProxy.PageControllerTest do
 
   @valid_attrs %{project: "crosscloudci/testproj", ref: "834f6f81e394", arch: "amd64"}
   test "lists all entries on index", %{conn: conn} do
+    ExCiProxy.RegisterPlugin.register_all_ci_system_dependencies()
+    ExCiProxy.RegisterPlugin.register_all_ci_systems()
     conn = get conn, page_path(conn, :index), @valid_attrs
     _page = json_response(conn, 200)
     assert  %{"tag" => "v0.0.1",

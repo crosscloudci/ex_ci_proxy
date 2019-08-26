@@ -16,9 +16,6 @@ defmodule ExCiProxy.YmlReader.GitlabCiTest do
     |> Enum.reduce([], fn ({{k, v}, _idx}, _acc) -> 
       case k do
         "prometheus" ->
-          # Logger.info fn ->
-          #   "env variable: #{inspect(System.get_env("PROJECT_SEGMENT_ENV"))}"
-          # end
           yml = ExCiProxy.YmlReader.GitlabCi.configuration_repo_path(v["configuration_repo"]) |> ExCiProxy.YmlReader.GitlabCi.getcncfci() 
           assert yml |> is_binary  
         _ -> nil

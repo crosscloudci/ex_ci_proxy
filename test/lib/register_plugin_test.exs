@@ -30,6 +30,8 @@ defmodule ExCiProxy.RegisterPluginTest do
   end
 
   test "status" do 
+    ExCiProxy.RegisterPlugin.register_all_ci_system_dependencies()
+    ExCiProxy.RegisterPlugin.register_all_ci_system_dependencies()
     ans = ExCiProxy.RegisterPlugin.ci_system_type_list("testproj")
           |> List.first
           |> ExCiProxy.RegisterPlugin.status("crosscloudci/testproj", "834f6f81e3946c4fa", "amd86")

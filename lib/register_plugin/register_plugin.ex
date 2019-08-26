@@ -20,39 +20,42 @@ defmodule ExCiProxy.RegisterPlugin do
   end 
 
   def get_plugin(repo, plugin_name) do
-    # if repo != :not_found do
+    ref = ExCiProxy.YmlReader.Config.get_ref(plugin_name)
     if File.exists?("ci_plugins/" <> plugin_name) do
-      Logger.info fn ->
+      Logger.debug fn ->
         "register: pulling"
-      end
-      cd_ans = File.cd("ci_plugins/" <> plugin_name)
-      if cd_ans == :ok do
+      end 
+      :ok = File.cd("ci_plugins/" <> plugin_name)
+      try do
         System.cmd("git", ["fetch", "--all"])
-        System.cmd("git", ["reset", "--hard", "origin/" <> ExCiProxy.YmlReader.Config.get_ref(plugin_name)])
-        File.cd("../../")
-      else
-        Logger.error fn ->
-          "did not move into " <> "ci_plugins/" <> plugin_name
-        end
+        System.cmd("git", ["reset", "--hard", ref])
+      rescue
+        e ->
+          File.cd("../../")
+          Logger.error fn ->
+            inspect(e) <> "Error in pulling" <> inspect (["git", "reset", "--hard", ref])
+          end
+          raise e
       end
+      File.cd("../../")
     else
-      Logger.info fn ->
+      Logger.debug fn ->
         "register: cloning"
       end
-      # System.cmd("git", ["clone", "--single-branch", "--branch", 
-      #   ExCiProxy.YmlReader.Config.get_ref(plugin_name), repo, "ci_plugins/" <> plugin_name])
       System.cmd("git", ["clone", repo, "ci_plugins/" <> plugin_name])
-      #TODO checkout ref 
-      cd_ans = File.cd("ci_plugins/" <> plugin_name)
-      if cd_ans == :ok do
+      :ok = File.cd("ci_plugins/" <> plugin_name)
+      try do
         System.cmd("git", ["fetch", "--all"])
-        System.cmd("git", ["reset", "--hard", "origin/" <> ExCiProxy.YmlReader.Config.get_ref(plugin_name)])
-        File.cd("../../")
-      else
-        Logger.error fn ->
-          "did not move into " <> "ci_plugins/" <> plugin_name
-        end
+        System.cmd("git", ["reset", "--hard", ref])
+      rescue
+        e  ->
+          File.cd("../../")
+          Logger.error fn ->
+            inspect(e) <> "Error in cloning" <> inspect (["git", "reset", "--hard", ref])
+          end
+          raise e
       end
+      File.cd("../../")
     end
     repo
   end
@@ -74,7 +77,7 @@ defmodule ExCiProxy.RegisterPlugin do
   def build(_repo, plugin_name, :deps) do
     File.cd("ci_plugins/" <> plugin_name)
     # Don't install the dependencies on your dev
-    # enviroment :/ Test using docker: see README
+    # enviroment using the test suit. Test using docker: see README
     if Mix.env != :test do 
       System.cmd("bash", ["bin/build-deps.sh"])
     end
@@ -135,7 +138,7 @@ defmodule ExCiProxy.RegisterPlugin do
         "tag" => "v0.0.1", 
         "arch" => "amd64"} 
     else
-      Logger.info fn ->
+      Logger.debug fn ->
         "status ci_plugins/" <> plugin <> "/bin/status"
       end
       ans = File.cwd
