@@ -6,30 +6,6 @@ defmodule ExCiProxy.RegisterPlugin do
     ExCiProxy.YmlReader.Config.get_repo(plugin_name)
     |> ExCiProxy.RegisterPlugin.get_plugin(plugin_name)
     |> ExCiProxy.RegisterPlugin.build(plugin_name)
-    # if repo != :not_found do
-    #   if File.exists?("ci_plugins/" <> plugin_name) do
-    #     Logger.info fn ->
-    #       "register: pulling"
-    #     end
-    #     File.cd("ci_plugins/" <> plugin_name)
-    #     #TODO checkout ref 
-    #     System.cmd("git", ["pull", "origin"])
-    #     File.cd("../../")
-    #   else
-    #     Logger.info fn ->
-    #       "register: cloning"
-    #     end
-    #     System.cmd("git", ["clone", "--single-branch", "--branch", 
-    #       System.get_env("PROJECT_SEGMENT_ENV"), repo, "ci_plugins/" <> plugin_name])
-    #     #TODO checkout ref 
-    #   end
-      # execute build from in the plugin's direcory
-      # File.cd("ci_plugins/" <> plugin_name)
-      # System.cmd("bash", ["bin/build.sh"])
-      # File.cd("../../")
-    # else
-    #   :not_built
-    # end
   end
 
   def register(plugin_name, :deps) do
@@ -49,20 +25,34 @@ defmodule ExCiProxy.RegisterPlugin do
       Logger.info fn ->
         "register: pulling"
       end
-      File.cd("ci_plugins/" <> plugin_name)
-      #TODO checkout ref 
-      System.cmd("git", ["fetch", "--all"])
-      # git reset --hard origin/master
-      System.cmd("git", ["reset", "--hard", "origin/" <> System.get_env("PROJECT_SEGMENT_ENV")])
-      # System.cmd("git", ["pull", "origin"])
-      File.cd("../../")
+      cd_ans = File.cd("ci_plugins/" <> plugin_name)
+      if cd_ans == :ok do
+        System.cmd("git", ["fetch", "--all"])
+        System.cmd("git", ["reset", "--hard", "origin/" <> ExCiProxy.YmlReader.Config.get_ref(plugin_name)])
+        File.cd("../../")
+      else
+        Logger.error fn ->
+          "did not move into " <> "ci_plugins/" <> plugin_name
+        end
+      end
     else
       Logger.info fn ->
         "register: cloning"
       end
-      System.cmd("git", ["clone", "--single-branch", "--branch", 
-        System.get_env("PROJECT_SEGMENT_ENV"), repo, "ci_plugins/" <> plugin_name])
+      # System.cmd("git", ["clone", "--single-branch", "--branch", 
+      #   ExCiProxy.YmlReader.Config.get_ref(plugin_name), repo, "ci_plugins/" <> plugin_name])
+      System.cmd("git", ["clone", repo, "ci_plugins/" <> plugin_name])
       #TODO checkout ref 
+      cd_ans = File.cd("ci_plugins/" <> plugin_name)
+      if cd_ans == :ok do
+        System.cmd("git", ["fetch", "--all"])
+        System.cmd("git", ["reset", "--hard", "origin/" <> ExCiProxy.YmlReader.Config.get_ref(plugin_name)])
+        File.cd("../../")
+      else
+        Logger.error fn ->
+          "did not move into " <> "ci_plugins/" <> plugin_name
+        end
+      end
     end
     repo
   end

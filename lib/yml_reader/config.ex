@@ -21,4 +21,18 @@ defmodule ExCiProxy.YmlReader.Config do
       repo
     end
   end
+
+  def get_ref(service) do
+    repo = get |>
+    Enum.reduce([], fn(x, acc) -> 
+      if x["name"] == service do
+          acc = x["ref"]
+      end
+    end)
+    if is_nil(repo) do
+      :not_found 
+    else
+      repo
+    end
+  end
 end

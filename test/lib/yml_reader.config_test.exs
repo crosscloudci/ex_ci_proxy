@@ -13,4 +13,9 @@ defmodule ExCiProxy.YmlReader.ConfigTest do
     repo = ExCiProxy.YmlReader.Config.get_repo("travis-ci")
     assert repo == "http://github.com/crosscloudci/ci_plugin_travis_go"
   end
+
+  test "ref" do 
+    ref = ExCiProxy.YmlReader.Config.get_ref("travis-ci")
+    assert ref == "master"
+  end
 end
