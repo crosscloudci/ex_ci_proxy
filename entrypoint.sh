@@ -11,5 +11,4 @@ echo "Connected!"
 mix register_plugins.build.deps
 go version
 mix register_plugins.build
-mix test
 mix phoenix.server
