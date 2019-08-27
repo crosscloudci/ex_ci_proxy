@@ -34,7 +34,7 @@ CI-Proxy-Deploy:
         echo "Deploying $CI_COMMIT_REF_NAME on $BASE_URL"
         export CIPROXY_INGRESS="devapi.cncf.ci"
         export TLS="true"
-        export PROJECT_SEGMENT_ENV="integration"
+        export PROJECT_SEGMENT_ENV="master"
       elif [ "$BASE_URL" == "https://gitlab.cidev.cncf.ci" ] && [ "$CI_COMMIT_REF_NAME" == "integration" ]; then 
         echo "Deploying $CI_COMMIT_REF_NAME on $BASE_URL"
         export CIPROXY_INGRESS="cidevapi.cncf.ci"
