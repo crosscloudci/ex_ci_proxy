@@ -157,6 +157,21 @@ defmodule ExCiProxy.YmlReader.GitlabCi do
     project_list["ci_system"][0]["ci_system"]
   end
 
+  def valid_project_name(project_name) do
+    full_project_list = ExCiProxy.YmlReader.GitlabCi.project_list()
+    project_list = Enum.reduce(full_project_list, [], fn (x, acc) -> 
+      case x["yml_name"] do
+        ^project_name -> [x | acc]
+        _ -> acc 
+      end 
+    end)
+    if project_list |> Enum.count() == 0 do
+      false 
+    else
+      true
+    end
+  end
+
   def ci_project_name(project_name) do
     full_project_list = ExCiProxy.YmlReader.GitlabCi.project_list()
 
@@ -167,16 +182,21 @@ defmodule ExCiProxy.YmlReader.GitlabCi do
       end 
     end)
     #TODO fix for multiple ci systems
-    
+
     if project_list |> Enum.count() == 0 do
-			Logger.error fn ->
+      Logger.error fn ->
         "project_name not found in yml" <> inspect(project_name)
-			end
+      end
       :not_found
     else
-      pl = project_list |> List.first
-      ci_system = pl["ci_system"] |> List.first 
-      ci_system["ci_project_name"]
+      try do
+        pl = project_list |> List.first
+        ci_system = pl["ci_system"] |> List.first 
+        ci_system["ci_project_name"]
+      rescue
+        _e  -> 
+          :ci_system_misconfigured
+      end
     end
   end
 end

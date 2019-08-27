@@ -151,15 +151,22 @@ defmodule ExCiProxy.RegisterPlugin do
         "status ci_plugins/" <> inspect(plugin) <> "/bin/status"
       end
       ci_project_name = ExCiProxy.YmlReader.GitlabCi.ci_project_name(project)
-      Logger.debug fn ->
-        "ci_project_name " <> ci_project_name
+      case ci_project_name  do
+        :not_found ->
+          :invalid_project_for_global_config
+        :ci_system_misconfigured ->
+          :ci_system_misconfigured
+        _ ->
+          Logger.debug fn ->
+            "ci_project_name " <> ci_project_name
+          end
+          File.cwd
+          |> elem(1)
+          |> Path.join("ci_plugins/" <> plugin <> "/bin/status")
+          |> System.cmd(["status", "--project", ci_project_name, "--commit", ref])
+          |> elem(0)
+          |> ci_parse
       end
-      File.cwd
-      |> elem(1)
-      |> Path.join("ci_plugins/" <> plugin <> "/bin/status")
-      |> System.cmd(["status", "--project", ci_project_name, "--commit", ref])
-      |> elem(0)
-      |> ci_parse
     end
   end
 
