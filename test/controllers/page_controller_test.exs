@@ -1,7 +1,7 @@
 defmodule ExCiProxy.PageControllerTest do
   use ExCiProxy.ConnCase
 
-  @valid_attrs %{project: "crosscloudci/testproj", ref: "834f6f81e394", arch: "amd64", interface: "cli"  }
+  @valid_attrs %{project: "testproj", ref: "834f6f81e394", arch: "amd64", interface: "cli"  }
   test "lists all entries on index", %{conn: conn} do
     ExCiProxy.RegisterPlugin.register_all_ci_system_dependencies()
     ExCiProxy.RegisterPlugin.register_all_ci_systems()

@@ -11,17 +11,17 @@ defmodule ExCiProxy.RegisterPluginTest do
 
   test "ci_system_type_list" do 
     ans = ExCiProxy.RegisterPlugin.ci_system_type_list()
-    assert ans == ["travis", "travis-ci"] 
+    assert ans == ["travis-ci", "travis"] 
   end
   
   test "ci_system_type_list per project" do 
-    ans = ExCiProxy.RegisterPlugin.ci_system_type_list("crosscloudci/testproj")
+    ans = ExCiProxy.RegisterPlugin.ci_system_type_list("testproj")
     assert ans == ["travis-ci"] 
   end
 
   test "get_list_then_register all project's ci systems" do 
     ans = ExCiProxy.RegisterPlugin.register_all_ci_systems_from_project_config()
-    assert ans == [:not_built, :ok] 
+    assert ans == [:ok, :not_built] 
   end
 
   test "get_list_then_register" do 
@@ -37,9 +37,9 @@ defmodule ExCiProxy.RegisterPluginTest do
   test "status" do 
     ExCiProxy.RegisterPlugin.register_all_ci_system_dependencies()
     ExCiProxy.RegisterPlugin.register_all_ci_systems()
-    ans = ExCiProxy.RegisterPlugin.ci_system_type_list("crosscloudci/testproj")
+    ans = ExCiProxy.RegisterPlugin.ci_system_type_list("testproj")
           |> List.first
-          |> ExCiProxy.RegisterPlugin.status("crosscloudci/testproj", "834f6f81e3946c4fa", "amd86")
+          |> ExCiProxy.RegisterPlugin.status("testproj", "834f6f81e3946c4fa", "amd86")
     assert ans == %{"status" => "success",
       "build_url" => "https://travis-ci.org/crosscloudci/testproj/builds/572521581 "} 
   end

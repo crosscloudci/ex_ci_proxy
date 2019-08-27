@@ -108,6 +108,7 @@ defmodule ExCiProxy.YmlReader.GitlabCi do
       stable_ref = if v["stable_ref"], do: v["stable_ref"], else: cncfci_yml["project"]["stable_ref"]
       head_ref = if v["head_ref"], do: v["head_ref"], else: cncfci_yml["project"]["head_ref"]
       ci_system = if v["ci_system"], do: v["ci_system"], else: cncfci_yml["project"]["ci_system"]
+      ci_project_name = if v["ci_project_name"], do: v["ci_project_name"], else: cncfci_yml["project"]["ci_project_name"]
 			[%{"id" => 0, 
         "yml_name" => k, 
         "active" => v["active"],
@@ -123,6 +124,7 @@ defmodule ExCiProxy.YmlReader.GitlabCi do
         "stable_ref" => stable_ref,
         "head_ref" => head_ref,
         "ci_system" => ci_system,
+        "ci_project_name" => ci_project_name,
         # "order" => (idx + 1)} | acc] 
         "order" => v["order"]} | acc] 
 		end) 
@@ -151,6 +153,30 @@ defmodule ExCiProxy.YmlReader.GitlabCi do
         _ -> acc 
       end 
     end)
-    project_list[0]["ci_system"]
+    #TODO fix for multiple ci systems
+    project_list["ci_system"][0]["ci_system"]
+  end
+
+  def ci_project_name(project_name) do
+    full_project_list = ExCiProxy.YmlReader.GitlabCi.project_list()
+
+    project_list = Enum.reduce(full_project_list, [], fn (x, acc) -> 
+      case x["yml_name"] do
+        ^project_name -> [x | acc]
+        _ -> acc 
+      end 
+    end)
+    #TODO fix for multiple ci systems
+    
+    if project_list |> Enum.count() == 0 do
+			Logger.error fn ->
+        "project_name not found in yml" <> inspect(project_name)
+			end
+      :not_found
+    else
+      pl = project_list |> List.first
+      ci_system = pl["ci_system"] |> List.first 
+      ci_system["ci_project_name"]
+    end
   end
 end

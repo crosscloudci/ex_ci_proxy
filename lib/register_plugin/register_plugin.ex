@@ -67,7 +67,6 @@ defmodule ExCiProxy.RegisterPlugin do
     |> ExCiProxy.RegisterPlugin.build(plugin_name, :deps)
   end
 
-
   def get_plugin(:not_found, _plugin_name) do
     :not_built
   end 
@@ -149,12 +148,16 @@ defmodule ExCiProxy.RegisterPlugin do
         "arch" => "amd64"} 
     else
       Logger.debug fn ->
-        "status ci_plugins/" <> plugin <> "/bin/status"
+        "status ci_plugins/" <> inspect(plugin) <> "/bin/status"
+      end
+      ci_project_name = ExCiProxy.YmlReader.GitlabCi.ci_project_name(project)
+      Logger.debug fn ->
+        "ci_project_name " <> ci_project_name
       end
       File.cwd
       |> elem(1)
       |> Path.join("ci_plugins/" <> plugin <> "/bin/status")
-      |> System.cmd(["status", "--project", project, "--commit", ref])
+      |> System.cmd(["status", "--project", ci_project_name, "--commit", ref])
       |> elem(0)
       |> ci_parse
     end

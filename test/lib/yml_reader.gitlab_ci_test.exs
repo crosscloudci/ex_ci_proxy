@@ -75,12 +75,12 @@ defmodule ExCiProxy.YmlReader.GitlabCiTest do
 
     project_list = Enum.reduce(full_project_list, [], fn (x, acc) -> 
       case x["yml_name"] do
-        "crosscloudci/testproj" -> [x | acc]
+        "testproj" -> [x | acc]
         _ -> acc 
       end 
     end)
 
-    assert Enum.find_value(project_list, fn(x) -> x["yml_name"] == "crosscloudci/testproj" end) 
+    assert Enum.find_value(project_list, fn(x) -> x["yml_name"] == "testproj" end) 
     assert Enum.find_value(project_list, fn(x) -> Enum.at(x["ci_system"], 0)["ci_system_type"] == "travis-ci" end) 
   end
 
@@ -107,4 +107,5 @@ defmodule ExCiProxy.YmlReader.GitlabCiTest do
     # assert Enum.find_value(cloud_list, fn(x) -> x["status_jobs"] == ["e2e", "App-Deploy"] end) 
     assert Enum.find_value(cloud_list, fn(x) -> x["status_jobs"] == ["Build-Source", "App-Deploy", "e2e"] end) 
   end
+
 end
