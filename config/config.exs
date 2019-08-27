@@ -17,7 +17,7 @@ config :ex_ci_proxy, ExCiProxy.Endpoint,
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id],
-  level: :debug
+  level: :info
 
 
 # Import environment specific config. This must remain at the bottom
