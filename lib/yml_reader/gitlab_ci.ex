@@ -5,6 +5,9 @@ defmodule ExCiProxy.YmlReader.GitlabCi do
 	def get do
 		Application.ensure_all_started :inets
     retry with: exp_backoff() |> randomize |> cap(1_000) |> expiry(8_000), rescue_only: [MatchError] do  
+			Logger.debug fn ->
+				"Trying getcncfci http get on #{inspect(System.get_env("GITLAB_CI_YML"))}"
+			end
      {:ok, resp} = :httpc.request(:get, {System.get_env("GITLAB_CI_YML") |> to_charlist, []}, [], [body_format: :binary])
      {{_, 200, 'OK'}, _headers, body} = resp
      body
