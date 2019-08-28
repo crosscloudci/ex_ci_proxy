@@ -160,23 +160,36 @@ defmodule ExCiProxy.RegisterPlugin do
           Logger.debug fn ->
             "ci_project_name " <> ci_project_name
           end
-          File.cwd
+          case File.cwd 
           |> elem(1)
           |> Path.join("ci_plugins/" <> plugin <> "/bin/status")
-          |> System.cmd(["status", "--project", ci_project_name, "--commit", ref])
-          |> elem(0)
-          |> ci_parse
+          |> System.cmd(["status", "--project", ci_project_name, "--commit", ref]) do
+            # |> elem(0)
+            {ans, 0} ->
+              ans |> ci_parse 
+            {ans, error_code} ->
+              %{ error: ans, error_code: error_code} 
+          end
       end
     end
   end
 
+  # TODO make this non travis specific
   def ci_parse(status) do
     # get header
-    status_with_header = String.split(status, ["\n"])
-    # second row is the status
-    split_status = String.split(Enum.at(status_with_header, 1), ["\t"])
-    %{ "status" => Enum.at(split_status, 0),
-      "build_url" => Enum.at(split_status, 1) } 
+    Logger.debug fn ->
+      "ci_parse " <> status
+    end
+    case status do
+      "ERROR: failed to find project with given commit" ->
+        %{ "error" => status} 
+      _ ->
+        status_with_header = String.split(status, ["\n"])
+        # second row is the status
+        split_status = String.split(Enum.at(status_with_header, 1), ["\t"])
+        %{ "status" => Enum.at(split_status, 0),
+          "build_url" => Enum.at(split_status, 1) } 
+    end
   end
 
 end

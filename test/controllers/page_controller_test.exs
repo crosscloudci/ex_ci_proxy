@@ -4,6 +4,7 @@ defmodule ExCiProxy.PageControllerTest do
   @valid_attrs %{project: "testproj", ref: "834f6f81e394", arch: "amd64", interface: "cli"  }
   @invalid_project_attrs %{project: "invalidname", ref: "834f6f81e394", arch: "amd64", interface: "cli"  }
   @ci_system_misconfigured %{project: "prometheus", ref: "834f6f81e394", arch: "amd64", interface: "cli"  }
+  @missing_commit %{project: "testproj", ref: "fjdkafdjkaljdfkla", arch: "amd64", interface: "cli"  }
 
   test "lists all entries on index", %{conn: conn} do
     ExCiProxy.RegisterPlugin.register_all_ci_system_dependencies()
@@ -27,6 +28,13 @@ defmodule ExCiProxy.PageControllerTest do
     ExCiProxy.RegisterPlugin.register_all_ci_systems()
     conn = get conn, page_path(conn, :index), @ci_system_misconfigured
     assert  %{"error" => "ci_system misconfigured"} == json_response(conn, 422)
+  end
+
+  test "missing commit", %{conn: conn} do
+    ExCiProxy.RegisterPlugin.register_all_ci_system_dependencies()
+    ExCiProxy.RegisterPlugin.register_all_ci_systems()
+    conn = get conn, page_path(conn, :index), @missing_commit
+    assert  %{"error" => "", "error_code" => 1} == json_response(conn, 422)
   end
 
 end

@@ -15,8 +15,6 @@ defmodule ExCiProxy.PageController do
   end
 
   def index(conn, status_params) do
-    # if ExCiProxy.YmlReader.GitlabCi.valid_project_name(status_params["project"])  do
-    #   build_status = ExCiProxy.RegisterPlugin.ci_system_type_list(status_params["project"])
     case ExCiProxy.RegisterPlugin.ci_system_type_list(status_params["project"])
     |> List.first
     |> ExCiProxy.RegisterPlugin.status(status_params["project"], status_params["ref"], status_params["arch"]) do
@@ -28,10 +26,15 @@ defmodule ExCiProxy.PageController do
         conn 
         |> put_status(422)
         |> json(%{error: "ci_system misconfigured"})
+      %{error: ans, error_code: error_code} ->
+        conn 
+        |> put_status(422)
+        |> json(%{ error: ans, error_code: error_code})
       build_status ->
         render(conn, "index.json", build_status: build_status)
     end
   end
+
   def create(_conn, %{"ci_status/build/commit_ref" => _status__params}) do
     # changeset = Projects.changeset(%Projects{}, projects_params)
   end
