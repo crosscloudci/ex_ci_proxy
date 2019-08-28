@@ -20,4 +20,10 @@ RUN mix local.hex --force &&  \
 
 EXPOSE 4001
 
+# RUN mix register_plugin.build.deps
+
+RUN mix register_plugins.build.deps
+RUN go version
+RUN mix register_plugins.build
+
 ENTRYPOINT ["/entrypoint.sh"]

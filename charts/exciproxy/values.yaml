@@ -24,6 +24,9 @@ ingress:
   host: Set External Domain
   port: Set Forwarding port
 
+project:
+  segment_env: Set Project Segment ENV
+
 resources:
   limits:
     cpu: 2000m

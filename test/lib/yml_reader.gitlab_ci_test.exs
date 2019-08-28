@@ -1,25 +1,22 @@
 require IEx;
 # require Logger;
-defmodule CncfDashboardApi.YmlReader.GitlabCiTest do
+defmodule ExCiProxy.YmlReader.GitlabCiTest do
   use ExUnit.Case
 
   test "get" do 
-    yml = CncfDashboardApi.YmlReader.GitlabCi.get()
+    yml = ExCiProxy.YmlReader.GitlabCi.get()
     assert yml |> is_binary  
   end
 
   @tag :wip
   test "getcncfci" do 
-		{:ok, yml} = CncfDashboardApi.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
+		{:ok, yml} = ExCiProxy.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
 		yml["projects"] 
 		|> Stream.with_index 
     |> Enum.reduce([], fn ({{k, v}, _idx}, _acc) -> 
       case k do
         "prometheus" ->
-          # Logger.info fn ->
-          #   "env variable: #{inspect(System.get_env("PROJECT_SEGMENT_ENV"))}"
-          # end
-          yml = CncfDashboardApi.YmlReader.GitlabCi.configuration_repo_path(v["configuration_repo"]) |> CncfDashboardApi.YmlReader.GitlabCi.getcncfci() 
+          yml = ExCiProxy.YmlReader.GitlabCi.configuration_repo_path(v["configuration_repo"]) |> ExCiProxy.YmlReader.GitlabCi.getcncfci() 
           assert yml |> is_binary  
         _ -> nil
       end
@@ -27,13 +24,13 @@ defmodule CncfDashboardApi.YmlReader.GitlabCiTest do
   end
 
   test "cloud_list" do 
-    cloud_list = CncfDashboardApi.YmlReader.GitlabCi.cloud_list()
+    cloud_list = ExCiProxy.YmlReader.GitlabCi.cloud_list()
     assert Enum.find_value(cloud_list, fn(x) -> x["cloud_name"] == "aws" end) 
     assert Enum.find_value(cloud_list, fn(x) -> x["active"] == true end) 
   end
 
   test "cncf relation list" do 
-    cncf_relations = CncfDashboardApi.YmlReader.GitlabCi.cncf_relations_list()
+    cncf_relations = ExCiProxy.YmlReader.GitlabCi.cncf_relations_list()
     assert Enum.find_value(cncf_relations, fn(x) -> 
       x["name"] == "Graduated" &&
       x["order"] == 1 
@@ -42,14 +39,14 @@ defmodule CncfDashboardApi.YmlReader.GitlabCiTest do
 
   @tag :wip
   test "projects_with_ymls" do 
-    project_list = CncfDashboardApi.YmlReader.GitlabCi.projects_with_yml()
+    project_list = ExCiProxy.YmlReader.GitlabCi.projects_with_yml()
     # assert Enum.find_value(project_list, fn(x) -> x["project_name"] == "prometheus" end) 
     assert Enum.find_value(project_list, fn(x) -> x["project_name"] == "coredns" end) 
   end
 
   @tag :wip
   test "coredns_project_list" do 
-    full_project_list = CncfDashboardApi.YmlReader.GitlabCi.project_list()
+    full_project_list = ExCiProxy.YmlReader.GitlabCi.project_list()
 
     project_list = Enum.reduce(full_project_list, [], fn (x, acc) -> 
       case x["yml_name"] do
@@ -74,7 +71,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCiTest do
   end
 
   test "testproj_project_list" do 
-    full_project_list = CncfDashboardApi.YmlReader.GitlabCi.project_list()
+    full_project_list = ExCiProxy.YmlReader.GitlabCi.project_list()
 
     project_list = Enum.reduce(full_project_list, [], fn (x, acc) -> 
       case x["yml_name"] do
@@ -87,10 +84,8 @@ defmodule CncfDashboardApi.YmlReader.GitlabCiTest do
     assert Enum.find_value(project_list, fn(x) -> Enum.at(x["ci_system"], 0)["ci_system_type"] == "travis-ci" end) 
   end
 
-
-
   test "project_list" do 
-    project_list = CncfDashboardApi.YmlReader.GitlabCi.project_list()
+    project_list = ExCiProxy.YmlReader.GitlabCi.project_list()
     assert Enum.find_value(project_list, fn(x) -> x["yml_name"] == "kubernetes" end) 
     assert Enum.find_value(project_list, fn(x) -> x["active"] == true end) 
     assert Enum.find_value(project_list, fn(x) -> x["display_name"] == "Kubernetes" end) 
@@ -104,7 +99,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCiTest do
   end
 
   test "gitlab_pipeline_config" do 
-    cloud_list = CncfDashboardApi.YmlReader.GitlabCi.gitlab_pipeline_config()
+    cloud_list = ExCiProxy.YmlReader.GitlabCi.gitlab_pipeline_config()
     assert Enum.find_value(cloud_list, fn(x) -> x["pipeline_name"] == "cross-project" end) 
     assert Enum.find_value(cloud_list, fn(x) -> x["pipeline_name"] == "cross-cloud" end) 
     assert Enum.find_value(cloud_list, fn(x) -> x["pipeline_name"] == "project" end) 
@@ -112,4 +107,5 @@ defmodule CncfDashboardApi.YmlReader.GitlabCiTest do
     # assert Enum.find_value(cloud_list, fn(x) -> x["status_jobs"] == ["e2e", "App-Deploy"] end) 
     assert Enum.find_value(cloud_list, fn(x) -> x["status_jobs"] == ["Build-Source", "App-Deploy", "e2e"] end) 
   end
+
 end

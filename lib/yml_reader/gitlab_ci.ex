@@ -1,15 +1,15 @@
 require IEx;
 require Logger;
-defmodule CncfDashboardApi.YmlReader.GitlabCi do
+defmodule ExCiProxy.YmlReader.GitlabCi do
   use Retry
 	def get do
 		Application.ensure_all_started :inets
     retry with: exp_backoff() |> randomize |> cap(1_000) |> expiry(8_000), rescue_only: [MatchError] do  
-     {:ok, resp} = :httpc.request(:get, {System.get_env("GITLAB_CI_YML") |> to_charlist, []}, [], [body_format: :binary])
+			Logger.debug fn ->
+				"Trying getcncfci http get on #{inspect(System.get_env("GLOBAL_CONFIG_YML"))}"
+			end
+     {:ok, resp} = :httpc.request(:get, {System.get_env("GLOBAL_CONFIG_YML") |> to_charlist, []}, [], [body_format: :binary])
      {{_, 200, 'OK'}, _headers, body} = resp
-        # Logger.info fn ->
-        #   "cross-cloud body #{body}"
-        # end
      body
     end
   end
@@ -28,7 +28,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
     try do
       retry with: exp_backoff() |> randomize |> cap(1_000) |> expiry(6_000), rescue_only: [MatchError] do  
         if is_nil(configuration_repo) == false do
-          Logger.info fn ->
+          Logger.debug fn ->
             "Trying getcncfci http get on #{inspect(configuration_repo)}"
           end
           {:ok, {{_, 200, 'OK'}, _headers, body}} = :httpc.request(:get, {configuration_repo |> to_charlist, []}, [], [body_format: :binary])
@@ -47,7 +47,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
   end
 
   def cloud_list do
-    {:ok, yml} = CncfDashboardApi.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
+    {:ok, yml} = ExCiProxy.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
     yml["clouds"] 
     |> Stream.with_index 
     |> Enum.reduce([], fn ({{k, v}, _idx}, acc) -> 
@@ -62,7 +62,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
 	end
 
   def cncf_relations_list do
-    {:ok, yml} = CncfDashboardApi.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
+    {:ok, yml} = ExCiProxy.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
     yml["cncf_relations"] 
     |> Stream.with_index 
     |> Enum.reduce([], fn ({v, idx}, acc) -> 
@@ -72,7 +72,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
 	end
 
   def projects_with_yml do
-		{:ok, yml} = CncfDashboardApi.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
+		{:ok, yml} = ExCiProxy.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
 		yml["projects"] 
 		|> Stream.with_index 
 		|> Enum.reduce([], fn ({{k, v}, _idx}, acc) -> 
@@ -86,15 +86,12 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
   end
 
   def configuration_repo_path(configuration_repo) do 
-    # Logger.info fn ->
-    #   "env variable: #{inspect(System.get_env("PROJECT_SEGMENT_ENV"))}"
-    # end
      "#{configuration_repo}/#{System.get_env("PROJECT_SEGMENT_ENV")}/cncfci.yml"
   end 
 
 	def project_list do
-    project_names = CncfDashboardApi.YmlReader.GitlabCi.projects_with_yml()
-		{:ok, yml} = CncfDashboardApi.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
+    project_names = ExCiProxy.YmlReader.GitlabCi.projects_with_yml()
+		{:ok, yml} = ExCiProxy.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
 		yml["projects"] 
 		|> Stream.with_index 
 		|> Enum.reduce([], fn ({{k, v}, _idx}, acc) -> 
@@ -111,6 +108,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
       stable_ref = if v["stable_ref"], do: v["stable_ref"], else: cncfci_yml["project"]["stable_ref"]
       head_ref = if v["head_ref"], do: v["head_ref"], else: cncfci_yml["project"]["head_ref"]
       ci_system = if v["ci_system"], do: v["ci_system"], else: cncfci_yml["project"]["ci_system"]
+      ci_project_name = if v["ci_project_name"], do: v["ci_project_name"], else: cncfci_yml["project"]["ci_project_name"]
 			[%{"id" => 0, 
         "yml_name" => k, 
         "active" => v["active"],
@@ -126,13 +124,14 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
         "stable_ref" => stable_ref,
         "head_ref" => head_ref,
         "ci_system" => ci_system,
+        "ci_project_name" => ci_project_name,
         # "order" => (idx + 1)} | acc] 
         "order" => v["order"]} | acc] 
 		end) 
 	end
 
 	def gitlab_pipeline_config do
-		{:ok, yml} = CncfDashboardApi.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
+		{:ok, yml} = ExCiProxy.YmlReader.GitlabCi.get() |> YamlElixir.read_from_string 
 		yml["gitlab_pipeline"] 
 		|> Stream.with_index 
 		|> Enum.reduce([], fn ({{k, v}, _idx}, acc) -> 
@@ -146,7 +145,7 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
 	end
 
   def project_ci_system(project_name) do
-    full_project_list = CncfDashboardApi.YmlReader.GitlabCi.project_list()
+    full_project_list = ExCiProxy.YmlReader.GitlabCi.project_list()
 
     project_list = Enum.reduce(full_project_list, [], fn (x, acc) -> 
       case x["yml_name"] do
@@ -154,6 +153,50 @@ defmodule CncfDashboardApi.YmlReader.GitlabCi do
         _ -> acc 
       end 
     end)
-    project_list[0]["ci_system"]
+    #TODO fix for multiple ci systems
+    project_list["ci_system"][0]["ci_system"]
+  end
+
+  def valid_project_name(project_name) do
+    full_project_list = ExCiProxy.YmlReader.GitlabCi.project_list()
+    project_list = Enum.reduce(full_project_list, [], fn (x, acc) -> 
+      case x["yml_name"] do
+        ^project_name -> [x | acc]
+        _ -> acc 
+      end 
+    end)
+    if project_list |> Enum.count() == 0 do
+      false 
+    else
+      true
+    end
+  end
+
+  def ci_project_name(project_name) do
+    full_project_list = ExCiProxy.YmlReader.GitlabCi.project_list()
+
+    project_list = Enum.reduce(full_project_list, [], fn (x, acc) -> 
+      case x["yml_name"] do
+        ^project_name -> [x | acc]
+        _ -> acc 
+      end 
+    end)
+    #TODO fix for multiple ci systems
+
+    if project_list |> Enum.count() == 0 do
+      Logger.error fn ->
+        "project_name not found in yml" <> inspect(project_name)
+      end
+      :not_found
+    else
+      try do
+        pl = project_list |> List.first
+        ci_system = pl["ci_system"] |> List.first 
+        ci_system["ci_project_name"]
+      rescue
+        _e  -> 
+          :ci_system_misconfigured
+      end
+    end
   end
 end

@@ -40,6 +40,8 @@ spec:
           value: {{ .Values.db.host }}
         - name: DB_POOL_SIZE
           value: "{{ .Values.db.pool }}"
+        - name: PROJECT_SEGMENT_ENV     
+          value: {{ .Values.project.segment_env }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:

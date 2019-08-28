@@ -16,4 +16,3 @@ RUN source $HOME/.kiex/scripts/kiex && \
     kiex use 1.9.1 && \
     kiex default 1.9.1
 
-
