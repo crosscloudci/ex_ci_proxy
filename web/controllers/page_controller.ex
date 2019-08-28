@@ -26,6 +26,10 @@ defmodule ExCiProxy.PageController do
         conn 
         |> put_status(422)
         |> json(%{error: "ci_system misconfigured"})
+      %{"status" => "failed", "build_url" => build_url} ->
+        conn 
+        |> put_status(422)
+        |> json(%{build_status: %{"status": "failed", "build_url": build_url}})
       %{error: ans, error_code: error_code} ->
         conn 
         |> put_status(422)

@@ -11,7 +11,7 @@ defmodule ExCiProxy.RegisterPluginTest do
 
   test "ci_system_type_list" do 
     ans = ExCiProxy.RegisterPlugin.ci_system_type_list()
-    assert ans == ["travis-ci", "travis"] 
+    assert ans == ["travis-ci"] 
   end
   
   test "ci_system_type_list per project" do 
@@ -21,7 +21,7 @@ defmodule ExCiProxy.RegisterPluginTest do
 
   test "get_list_then_register all project's ci systems" do 
     ans = ExCiProxy.RegisterPlugin.register_all_ci_systems_from_project_config()
-    assert ans == [:ok, :not_built] 
+    assert ans == [:ok] 
   end
 
   test "get_list_then_register" do 
