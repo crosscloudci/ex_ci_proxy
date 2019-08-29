@@ -158,7 +158,7 @@ defmodule ExCiProxy.RegisterPlugin do
           :ci_system_misconfigured
         _ ->
           Logger.debug fn ->
-            "ci_project_name " <> ci_project_name
+            "ci_project_name " <> inspect(ci_project_name)
           end
           case File.cwd 
           |> elem(1)

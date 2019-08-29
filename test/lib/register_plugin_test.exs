@@ -41,7 +41,7 @@ defmodule ExCiProxy.RegisterPluginTest do
           |> List.first
           |> ExCiProxy.RegisterPlugin.status("testproj", "834f6f81e3946c4fa", "amd86")
     assert ans == %{"status" => "success",
-      "build_url" => "https://travis-ci.org/crosscloudci/testproj/builds/572521581 "} 
+      "build_url" => "https://travis-ci.org/crosscloudci/testproj/builds/569941325 "} 
   end
 
   test "ci_parse" do 
