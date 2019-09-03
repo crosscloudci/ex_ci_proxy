@@ -6,6 +6,7 @@ defmodule ExCiProxy.PageControllerTest do
   @ci_system_misconfigured %{project: "prometheus", ref: "834f6f81e394", arch: "amd64", interface: "cli"  }
   @missing_commit %{project: "testproj", ref: "fjdkafdjkaljdfkla", arch: "amd64", interface: "cli"  }
   @failed_commit %{project: "testproj", ref: "afb4d68b0f9", arch: "amd64", interface: "cli"  }
+  @linkerd2 %{project: "linkerd2", ref: "368d16f23", arch: "amd64", interface: "cli"  }
 
   test "lists all entries on index", %{conn: conn} do
     ExCiProxy.RegisterPlugin.register_all_ci_system_dependencies()
@@ -13,6 +14,16 @@ defmodule ExCiProxy.PageControllerTest do
     conn = get conn, page_path(conn, :index), @valid_attrs
     _page = json_response(conn, 200)
     assert  %{ "build_url" => "https://travis-ci.org/crosscloudci/testproj/builds/569941325 ",
+                    "status" => "success"
+      } = json_response(conn, 200)["build_status"]
+  end
+
+  test "linkerd2 should pass", %{conn: conn} do
+    ExCiProxy.RegisterPlugin.register_all_ci_system_dependencies()
+    ExCiProxy.RegisterPlugin.register_all_ci_systems()
+    conn = get conn, page_path(conn, :index), @linkerd2
+    _page = json_response(conn, 200)
+    assert  %{ "build_url" => "https://travis-ci.org/linkerd/linkerd2/builds/578036893 ",
                     "status" => "success"
       } = json_response(conn, 200)["build_status"]
   end
