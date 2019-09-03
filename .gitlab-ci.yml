@@ -50,6 +50,7 @@ CI-Proxy-Deploy:
         export CIPROXY_INGRESS="productionapi.cncf.ci"
         export TLS="true"
         export PROJECT_SEGMENT_ENV="production"
+        export CI_COMMIT_REF_NAME="prod"
       else
         echo "No Matching Environment Could Be Found"
         exit 1
