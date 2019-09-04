@@ -17,7 +17,6 @@ CI-Proxy:
         echo "Deploying $CI_COMMIT_REF_NAME on $BASE_URL"
       elif [ "$BASE_URL" == "https://gitlab.cncf.ci" ] && [ "$CI_COMMIT_REF_NAME" == "production" ]; then
         echo "Deploying $CI_COMMIT_REF_NAME on $BASE_URL"
-        export CI_COMMIT_REF_NAME="prod"
       else
         echo "No Matching Environment Could Be Found"
         exit 1
@@ -36,22 +35,25 @@ CI-Proxy-Deploy:
         export CIPROXY_INGRESS="devapi.cncf.ci"
         export TLS="true"
         export PROJECT_SEGMENT_ENV="integration"
+        export DEPLOYMENT_NAME="$(echo "proxy-$CI_COMMIT_REF_NAME" | cut -c 1-10)"
       elif [ "$BASE_URL" == "https://gitlab.cidev.cncf.ci" ] && [ "$CI_COMMIT_REF_NAME" == "integration" ]; then 
         echo "Deploying $CI_COMMIT_REF_NAME on $BASE_URL"
         export CIPROXY_INGRESS="cidevapi.cncf.ci"
         export TLS="true"
         export PROJECT_SEGMENT_ENV="master"
+        export DEPLOYMENT_NAME="$(echo "proxy-$CI_COMMIT_REF_NAME" | cut -c 1-10)"
       elif [ "$BASE_URL" == "https://gitlab.staging.cncf.ci" ] && [ "$CI_COMMIT_REF_NAME" == "staging" ]; then 
         echo "Deploying $CI_COMMIT_REF_NAME on $BASE_URL"
         export CIPROXY_INGRESS="stagingapi.cncf.ci"
         export TLS="true"
         export PROJECT_SEGMENT_ENV="staging"
+        export DEPLOYMENT_NAME="$(echo "proxy-$CI_COMMIT_REF_NAME" | cut -c 1-10)"
       elif [ "$BASE_URL" == "https://gitlab.cncf.ci" ] && [ "$CI_COMMIT_REF_NAME" == "production" ]; then
         echo "Deploying $CI_COMMIT_REF_NAME on $BASE_URL"
         export CIPROXY_INGRESS="productionapi.cncf.ci"
         export TLS="true"
         export PROJECT_SEGMENT_ENV="production"
-        export CI_COMMIT_REF_NAME="prod"
+        export DEPLOYMENT_NAME="$(echo "proxy-$CI_COMMIT_REF_NAME" | cut -c 1-10)"
       else
         echo "No Matching Environment Could Be Found"
         exit 1
@@ -59,7 +61,7 @@ CI-Proxy-Deploy:
     - /helm/entrypoint.sh
     - export KUBECONFIG=/kubeconfig
     - helm init --service-account tiller
-    - helm delete --purge db-ciservice-"$CI_COMMIT_REF_NAME"
-    - helm install stable/postgresql --name db-ciservice-"$CI_COMMIT_REF_NAME" --set postgresqlDatabase=ciproxy --set persistence.enabled=false --set service.type=ClusterIP
-    - export POSTGRESQL_PASSWORD=$(kubectl get secret --namespace default db-ciservice-"$CI_COMMIT_REF_NAME"-postgresql -o jsonpath="{.data.postgresql-password}" | base64 -d)
-    - helm upgrade ciproxy-"$CI_COMMIT_REF_NAME" ./charts/exciproxy --install --force --wait --timeout 3600 --set tls="$TLS" --set db.user=postgres --set db.password=$POSTGRESQL_PASSWORD --set db.name=ciproxy --set db.host=db-ciservice-"$CI_COMMIT_REF_NAME"-postgresql --set db.pool=5 --set imagePullSecrets="$CI_COMMIT_REF_NAME"secret --set yaml=https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/"$PROJECT_SEGMENT_ENV"/cross-cloud.yml --set project.segment_env="$PROJECT_SEGMENT_ENV" --set ingress.host="$CIPROXY_INGRESS" --set ingress.port=4001 --set image.repository="$CI_REGISTRY_IMAGE/ciproxy-$CI_COMMIT_REF_NAME" --set image.tag="$CI_COMMIT_SHA"
+    - helm delete --purge db-"$DEPLOYMENT_NAME"
+    - helm install stable/postgresql --name db-"$DEPLOYMENT_NAME" --set postgresqlDatabase=ciproxy --set persistence.enabled=false --set service.type=ClusterIP
+    - export POSTGRESQL_PASSWORD=$(kubectl get secret --namespace default db-"$DEPLOYMENT_NAME"-postgresql -o jsonpath="{.data.postgresql-password}" | base64 -d)
+    - helm upgrade ci-"$DEPLOYMENT_NAME" ./charts/exciproxy --install --force --wait --timeout 3600 --set tls="$TLS" --set db.user=postgres --set db.password=$POSTGRESQL_PASSWORD --set db.name=ciproxy --set db.host=db-"$DEPLOYMENT_NAME"-postgresql --set db.pool=5 --set imagePullSecrets="$CI_COMMIT_REF_NAME"secret --set yaml=https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/"$CI_COMMIT_REF_NAME"/cross-cloud.yml --set project.segment_env="$PROJECT_SEGMENT_ENV" --set ingress.host="$CIPROXY_INGRESS" --set ingress.port=4001 --set image.repository="$CI_REGISTRY_IMAGE/ciproxy-$CI_COMMIT_REF_NAME" --set image.tag="$CI_COMMIT_SHA"
