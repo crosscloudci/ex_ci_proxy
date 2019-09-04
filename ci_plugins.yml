@@ -1,2 +1,2 @@
 plugins: 
-  - {name: "travis-ci", interface: "cli", repo: "http://github.com/crosscloudci/ci_plugin_travis_go", ref: "v0.0.3"}
+  - {name: "travis-ci", interface: "cli", repo: "http://github.com/crosscloudci/ci_plugin_travis_go", ref: "v0.0.5"}
