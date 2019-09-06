@@ -98,8 +98,11 @@ plugins:
     ref: "master"
 ```
  Name is the name of the plugin
+ 
  Interface type of plugin
+ 
  Repo is the github location of the plugin
+ 
  Ref is the branch or tag of the plugin 
 
  
