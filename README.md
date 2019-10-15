@@ -65,7 +65,7 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 	curl -X GET "http://localhost:<docker ip address>/ci_status_build/commit_ref?project=<ci project>&ref=<commit hash>&arch=AMD64" 
 ```
 
-# Plugin Development
+# Plugin Development and Standard API
 ## plugin build executable
 ```
 ./ci_plugin/<plugin name>/bin/build-deps
