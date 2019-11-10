@@ -23,12 +23,12 @@ plugins:
     repo: "http://github.com/crosscloudci/ci_plugin_travis_go"
     ref: "master"
 ```
- Name is the name of the plugin
+ **Name** is the name of the plugin
  
- Interface type of plugin
+ **Interface** type of plugin
  
- Repo is the github location of the plugin
+ **Repo** is the github location of the plugin
  
- Ref is the branch or tag of the plugin 
+ **Ref** is the branch or tag of the plugin 
 
  
