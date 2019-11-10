@@ -6,7 +6,7 @@
 ```
 ## Status executable and response format
 ### The first line is a header
-### The second line is tab delimited, 
+### The second line is tab delimited 
 ```
 ./ci_plugins/<plugin name>/bin/status status --project <orgname>/<projectname> --commit <commit name> 
 status  build_url
