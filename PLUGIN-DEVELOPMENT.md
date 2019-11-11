@@ -5,10 +5,11 @@
 ./ci_plugin/<plugin name>/bin/build
 ```
 ## Status executable and response format
+1. The output is **tab delimited**
+1. The **first line** is a **header**
+1. The **second line** is data 
 
 ```
-### The first line is a header
-### The second line is tab delimited 
 ./ci_plugins/<plugin name>/bin/status status --project <orgname>/<projectname> --commit <commit name> 
 status  build_url
 success https://travis-ci.org/crosscloudci/testproj/builds/572521581 
