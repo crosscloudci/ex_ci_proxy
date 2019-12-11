@@ -13,7 +13,7 @@ defmodule ExCiProxy.PageControllerTest do
     ExCiProxy.RegisterPlugin.register_all_ci_systems()
     conn = get conn, page_path(conn, :index), @valid_attrs
     _page = json_response(conn, 200)
-    assert  %{ "build_url" => "https://travis-ci.org/crosscloudci/testproj/builds/569941325 ",
+    assert  %{ "build_url" => "https://travis-ci.org/crosscloudci/testproj/builds/572521581 ",
                     "status" => "success"
       } = json_response(conn, 200)["build_status"]
   end
