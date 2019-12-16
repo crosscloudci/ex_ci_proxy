@@ -1,6 +1,8 @@
 FROM crystallang/crystal:0.31.1
 MAINTAINER "Denver Williams <denver@debian.nz>"
 
+ENV LANG C.UTF-8
+
 #Install Erlang
 ENV OTP_VERSION="20.3.8.24"
 
@@ -10,6 +12,7 @@ RUN set -xe \
 	&& OTP_DOWNLOAD_URL="https://github.com/erlang/otp/archive/OTP-${OTP_VERSION}.tar.gz" \
 	&& OTP_DOWNLOAD_SHA256="588e34a89f9ea8ebc3bda0918e4e1f4f7366888278f5e7ece60f6f1fa42aef60" \
 	&& fetchDeps=' \
+    curl \
 		ca-certificates' \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends $fetchDeps \
@@ -21,7 +24,6 @@ RUN set -xe \
 	' \
 	&& buildDeps=' \
 		autoconf \
-    curl \
     make \
 		dpkg-dev \
 		gcc \
