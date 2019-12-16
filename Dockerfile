@@ -22,7 +22,11 @@ EXPOSE 4001
 
 # RUN mix register_plugin.build.deps
 
+
 RUN mix register_plugins.build.deps
+# Set Go Path
+ENV GOPATH=$HOME/work
+ENV PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
 RUN go version
 RUN mix register_plugins.build
 
