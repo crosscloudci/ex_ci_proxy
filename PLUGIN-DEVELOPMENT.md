@@ -16,7 +16,7 @@
 1. The output is **tab delimited**
 1. The **first line** is a **header**
 1. The **second line** is data 
-1. The **status** should be success, failure, or running
+1. The **status** should be success, failed, or running
 1. The **build_url** should be the url where the status was found
 
 ```
