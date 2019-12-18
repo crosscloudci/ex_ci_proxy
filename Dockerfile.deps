@@ -1,18 +1,61 @@
-FROM erlang:20-alpine
+FROM crystallang/crystal:0.31.1
 MAINTAINER "Denver Williams <denver@debian.nz>"
 
-# Install Erlang/Elixir
-RUN apk -U upgrade && \
-    apk --update --no-cache add inotify-tools ncurses-libs git make g++ wget ca-certificates openssl curl bash \
-    && \
-    update-ca-certificates --fresh && \
-    curl -sSL https://raw.githubusercontent.com/taylor/kiex/master/install | bash -s
+ENV LANG C.UTF-8
+
+#Install Erlang
+ENV OTP_VERSION="20.3.8.24"
+
+# We'll install the build dependencies, and purge them on the last step to make
+# sure our final image contains only what we've just built:
+RUN set -xe \
+	&& OTP_DOWNLOAD_URL="https://github.com/erlang/otp/archive/OTP-${OTP_VERSION}.tar.gz" \
+	&& OTP_DOWNLOAD_SHA256="588e34a89f9ea8ebc3bda0918e4e1f4f7366888278f5e7ece60f6f1fa42aef60" \
+	&& fetchDeps=' \
+    curl \
+		ca-certificates' \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends $fetchDeps \
+	&& curl -fSL -o otp-src.tar.gz "$OTP_DOWNLOAD_URL" \
+	&& echo "$OTP_DOWNLOAD_SHA256  otp-src.tar.gz" | sha256sum -c - \
+	&& runtimeDeps=' \
+		libodbc1 \
+		libsctp1 \
+	' \
+	&& buildDeps=' \
+		autoconf \
+    make \
+		dpkg-dev \
+		gcc \
+		g++ \
+		libncurses-dev \
+		unixodbc-dev \
+		libssl-dev \
+		libsctp-dev \
+	' \
+	&& apt-get install -y --no-install-recommends $runtimeDeps \
+	&& apt-get install -y --no-install-recommends $buildDeps \
+	&& export ERL_TOP="/usr/src/otp_src_${OTP_VERSION%%@*}" \
+	&& mkdir -vp $ERL_TOP \
+	&& tar -xzf otp-src.tar.gz -C $ERL_TOP --strip-components=1 \
+	&& rm otp-src.tar.gz \
+	&& ( cd $ERL_TOP \
+	  && ./otp_build autoconf \
+	  && gnuArch="$(dpkg-architecture --query DEB_HOST_GNU_TYPE)" \
+	  && ./configure --build="$gnuArch" \
+	  && make -j$(nproc) \
+	  && make install ) 
+
+# Install Elixir
+RUN curl -sSL https://raw.githubusercontent.com/taylor/kiex/master/install | bash -s
+
+RUN /bin/bash -c "source $HOME/.kiex/scripts/kiex && \
+    kiex install 1.9.1 && \
+    kiex use 1.9.1 && \
+    kiex default 1.9.1"
 
 # Add local node module binaries to PATH
 ENV PATH $PATH:node_modules/.bin:/root/.kiex/builds/elixir-git/bin
 
-RUN source $HOME/.kiex/scripts/kiex && \
-    kiex install 1.9.1 && \
-    kiex use 1.9.1 && \
-    kiex default 1.9.1
+
 

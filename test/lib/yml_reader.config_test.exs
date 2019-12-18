@@ -20,6 +20,6 @@ defmodule ExCiProxy.YmlReader.ConfigTest do
   end
   test "get_plugin_ci_system_list" do 
     list = ExCiProxy.YmlReader.Config.get_plugin_ci_system_list()
-    assert list == ["travis-ci"]
+    assert list == ["travis-ci-com", "github-actions", "travis-ci"]
   end
 end

@@ -46,7 +46,7 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 ```
 ### Test with port mapping 
 ```
-	 docker run -e PROJECT_SEGMENT_ENV="master" -e GITLAB_CI_YML="https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/master/cross-cloud.yml" -ti crosscloudci/ciproxy:latest -p 4001:4001 
+	 docker run -e PROJECT_SEGMENT_ENV="master" -e GLOBAL_CONFIG_YML="https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/master/cross-cloud.yml" -ti crosscloudci/ciproxy:latest -p 4001:4001
 ```
 ### Get name of the container 
 ```
@@ -58,11 +58,11 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 ```
 ### Get docker ip address 
 ```
-	docker exec -ti <name of container> ifconfig
+	docker exec -ti <name of container> ip a
 ```
 ### Test with docker container ip 
 ```
-	curl -X GET "http://localhost:<docker ip address>/ci_status_build/commit_ref?project=<ci project>&ref=<commit hash>&arch=AMD64" 
+	curl -X GET "http://<docker ip address>:port/ci_status_build/commit_ref?project=<ci project>&ref=<commit hash>&arch=AMD64" 
 ```
 
 # Plugin Development and Standard API
