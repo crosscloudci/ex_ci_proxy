@@ -1,4 +1,4 @@
 plugins: 
   - {name: "travis-ci", interface: "cli", repo: "http://github.com/crosscloudci/ci_plugin_travis_go", ref: "v0.0.7"}
   - {name: "github-actions", interface: "cli", repo: "http://github.com/crosscloudci/cr_plugin_github_actions", ref: "v0.0.8"}
-  - {name: "travis-ci-com", interface: "cli", repo: "http://github.com/crosscloudci/ci_plugin_travis_com_go", ref: "v0.0.2"}
+  - {name: "travis-ci-com", interface: "cli", repo: "http://github.com/crosscloudci/ci_plugin_travis_com_go", ref: "v0.0.3"}
