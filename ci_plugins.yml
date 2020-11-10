@@ -1,5 +1,5 @@
 plugins: 
   - {name: "travis-ci", interface: "cli", repo: "http://github.com/crosscloudci/ci_plugin_travis_go", ref: "v0.0.7"}
-  - {name: "github-actions", interface: "cli", repo: "http://github.com/crosscloudci/cr_plugin_github_actions", ref: "v0.0.8"}
+  - {name: "github-actions", interface: "cli", repo: "http://github.com/crosscloudci/cr_plugin_github_actions", ref: "v0.0.9"}
   - {name: "travis-ci-com", interface: "cli", repo: "http://github.com/crosscloudci/ci_plugin_travis_com_go", ref: "v0.0.3"}
   - {name: "circle-ci", interface: "cli", repo: "https://github.com/crosscloudci/cr_plugin_circle_ci", ref: "v0.0.3"}
