@@ -60,6 +60,7 @@ CI-Proxy-Deploy:
       fi
     - /helm/entrypoint.sh
     - export KUBECONFIG=/kubeconfig
+    - helm repo add stable https://charts.helm.sh/stable
     - helm repo add cncf http://cncf.gitlab.io/stable
     - helm repo update
     - helm delete db-"$DEPLOYMENT_NAME" || true
